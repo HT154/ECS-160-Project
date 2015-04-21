@@ -1,45 +1,39 @@
 User
 	id: int
 		numerical ID of the user
-	
+	name: string
+		alphanumeric username
 	parcels {Pid}
 		array of parcel IDs
-	
 	friends {status, uID}
 		array of structs:	status: char	// if friend is confirmed or not, this dictates whether we can initiate a transaction with the specified friend (0=confirmed, 1=request sent, 2=request received)
 					id: int		// id of friend
-	
 	courier: bool
 		indicates whether the user has opted to be able to be used as an intermediary courier
-	
 	lat: double
 		the user's current latitude
-	
 	lng: double
 		the user's current longitude
-	
 	rating: int
 		user's current rating
-	
 	ratable {uID}
 		array of user IDs that the user is allowed to rate. After a transaction involving an user (as sender, receiver, or courier), their ID is added to this array. When rating a user, the first instance of their ID is removed from this array.
 	
 	requestFriend(uID)
 		A sends this to B, A adds B to friends with status 1, B adds A to friends with status 2
-	acceptFriend(uID)
-		A sends this to a friend B with status 2, changes status of A's friend B and B's friend A to 0
-	denyFriend(uID)
-		A sends this to a friend B with status 2, removes B from A's friends and A from B's friends
+	friendResponse(uID, bool)
+		true: A sends this to a friend B with status 2, changes status of A's friend B and B's friend A to 0
+		false: A sends this to a friend B with status 2, removes B from A's friends and A from B's friends
 	
 	requestRendezvous(pID)
 		A sends a parcel (status=0 or 3) to B with the proposed date and time saved to the parcel, if pID.status!=3 then parcel is added to B's parcels, sets parcel status to 1
-	cancelRendezvous(pID)
-		A sends a parcel (status=1) to B. Parcel status set to 0 if parcel.source==parcel.carrier, 3 otherwise
-	acceptRendezvous(pID)
-		A sends a parcel (status=1) to B. Parcel status is set to 2.
+	rendezvousResponse(pID, bool)
+		true: A sends a parcel (status=1) to B. Parcel status set to 0 if parcel.source==parcel.carrier, 3 otherwise
+		false: A sends a parcel (status=1) to B. Parcel status is set to 2.
 	
-	finalizeExchange(pID)
-		A (carrier) sends a parcel (status=2) to B (next recipient). pID.carrier = B.id. If B.id!=pID.destination, set status=3 else 4. If B.id!=pID.destination, B must call pID.destination->requestRendezvous(pID)
+	finalizeExchange(pID, bool)
+		true: A (carrier) sends a parcel (status=2) to B (next recipient). pID.carrier = B.id. If B.id!=pID.destination, set status=3 else 4. If B.id!=pID.destination, B must call pID.destination->requestRendezvous(pID)
+		false: If B.id!=pID.destination, set status=3 else 0
 	
 	initiateCourier(pID) -> uID
 		A sends a parcel (status=0) to B. pID is added to B.parcels. Returns uID of closest mutual friend. A must then call uID->requestRendezvous(pID)
@@ -47,9 +41,18 @@ User
 	isFriendWith(uID) -> bool
 		Sent from A to B. Return true if uID is a member of B.friends
 
+	isRatable(uID) -> bool
+		Called on self. Looks up uID in ratable. True if exists.
+	
+	rate(bool)
+		true: A calls on B. Remove first instance of B.id from A.ratable. Increment B.rating
+		false: A calls on B. Remove first instance of B.id from A.ratable. Decrement B.rating
+
 Parcel
 	id: int
 		numerical ID of the parcel
+	description: string
+		name/description/notes
 	status: char
 		0=uninitiated, 1=rendezvous requested, 2=rendezvous accepted, 3=with courier, 4=completed
 	destination: int
