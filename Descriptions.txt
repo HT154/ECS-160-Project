@@ -1,3 +1,26 @@
+==== Use Cases ====
+
+Exchange - Perform a parcel exchange between two people.
+	Requires both users involved to be friends.
+
+Courier - Perform a parcel exchange between two people with a third person acting as a middleman.
+	Requires all users involved to be friends.
+
+Rate - Rate a user following an interaction (Exchange or Courier) with them.
+	Requires both users involved to be friends and have interacted.
+
+Request Friend - Request a user to be friends.
+
+Manually Create User - Performed by an Administrator. Creates and initializes a new User.
+
+==== Invariants ====
+
+* Users must be friends to initiate an exchange.
+* A possible courier for an exchange is friends with both the source and the destination and has elected to be a courier.
+* In order to rate a user, their ID must be present one or more times in the current user's ratable array.
+
+==== Classes ====
+
 User
 	id: int
 		numerical ID of the user
