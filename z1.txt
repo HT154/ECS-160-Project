@@ -1,0 +1,47 @@
+FriendStatus ::= confirmed | request_sent | request_received
+ParcelStatus ::= uninitiated | rendezvous_requested | rendezvous_accepted | with_courier | completed
+Bool ::= True | False
+
+[Char]
+String == seq Char
+
+[User]
+
+┌─UserManager
+│user_id: User ⇸ ℕ
+│user_name: User ⇸ String
+│user_parcels: User ⇸ ℙParcel
+│user_friends: User ⇸ ℙUser
+│user_friend_status: {User, User} ⇸ FriendStatus
+│user_courier: User ⇸ Bool
+│user_lat: User ⇸ ℝ
+│user_lng: User ⇸ ℝ
+│user_rating: User ⇸ ℤ
+│user_ratable: User ⇸ ℙUser
+├─
+│
+└─
+
+[Parcel]
+
+┌─ParcelManager
+│parcel_id: Parcel ⇸ ℕ
+│parcel_description: Parcel ⇸ String
+│parcel_status: Parcel ⇸ ParcelStatus
+│parcel_destination: Parcel ⇸ User
+│parcel_source: Parcel ⇸ User
+│parcel_carrier: Parcel ⇸ User
+│parcel_lat: User ⇸ ℝ
+│parcel_lng: User ⇸ ℝ
+│parcel_time: User ⇸ ℕ
+├─
+│
+└─
+
+┌─Server
+│users: ℙUser
+│parcels: ℙParcel
+│user_parcels: User ⇸ ℙParcel
+├─
+│
+└─
