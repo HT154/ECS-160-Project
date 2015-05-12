@@ -77,17 +77,53 @@ s? is for sender and r? is for receiver.\\
 	\lor ParcelStatus'~p \mapsto WithCourier\\
 \end{schema}
 
-initiateCourier(pID) -> uID
-A sends a parcel (status=0) to B. pID is added to B.parcels. Returns uID of closest mutual friend. A must then call uID->requestRendezvous(pID)
+\begin{schema}{InitiateCourier}
+	\Delta UserManager\\
+	\Delta ParcelManager\\
+	s? : User\\
+	r? : User\\
+	p? : Parcel\\
+	!courier : User
+	\where
+	UserFriendStatus \{r?, s?\} \mapsto confirmed\\
+	\exists c : User \in (UserFriends~s? \cap UserFriends~r? \land UserFriendStatus \{r?, c?\} \mapsto confirmed \land UserFriendStatus \{s?, c?\} \mapsto confirmed) FIX THIS\\
+	p? \in UserParcels~s?\\
+	ParcelStatus~p? \mapsto uninitiated\\
+	UserParcels'~r? = UserParcels'~r? \cup \{p?\}\\
+	
+	!courier = FINISH THIS
+\end{schema}
 
-isFriendWith(uID) -> bool
-Sent from A to B. Return true if uID is a member of B.friends
+\begin{schema}{IsFriendWith}
+	\Delta UserManager\\
+	s? : User\\
+	r? : User\\
+	res! : Bool
+	\where
+	res! = UserFriendStatus \{r?, s?\} \mapsto confirmed\\
+\end{schema}
 
-isRatable(uID) -> bool
-Called on self. Looks up uID in ratable. True if exists.
+\begin{schema}{IsRatable}
+	\Delta UserManager\\
+	s? : User\\
+	r? : User\\
+	res! : Bool
+	\where
+	res! = (UserFriendStatus \{r?, s?\} \mapsto confirmed\\
+	\t \land r? \sqsubset UserRatable~s?)
+\end{schema}
 
-rate(bool)
-true: A calls on B. Remove first instance of B.id from A.ratable. Increment B.rating
-false: A calls on B. Remove first instance of B.id from A.ratable. Decrement B.rating
+\begin{schema}{Rate}
+	\Delta UserManager\\
+	s? : User\\
+	r? : User\\
+	up? : Bool
+	\where
+	UserFriendStatus \{r?, s?\} \mapsto confirmed\\
+	r? \sqsubset UserRatable~s?\\
+	(up? = True \and UserRating'~r? = UserRating~r? + 1)\\
+	\lor (UserRating'~r? = UserRating~r? - 1)\\
+	UserRatable'~s? = UserRatable'~s? \cupdot \lbrack r? \rbrack\\
+\end{schema}
 
 \end{document}

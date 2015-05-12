@@ -17,7 +17,7 @@ String == seq Char
 │user_lat: User ⇸ ℝ
 │user_lng: User ⇸ ℝ
 │user_rating: User ⇸ ℤ
-│user_ratable: User ⇸ ℙUser
+│user_ratable: User ⇸ bag User
 ├─
 │
 └─
