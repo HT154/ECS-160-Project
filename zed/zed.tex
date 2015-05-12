@@ -1,0 +1,93 @@
+\documentclass{article}
+
+\usepackage[mathrm,colour,cntbysection]{czt}
+
+% count definitions per section
+\CountDefstrue
+
+\begin{document}
+
+s? is for sender and r? is for receiver.\\
+
+\begin{schema}{RequestFriend}
+	\Delta UserManager\\
+	s? : User\\
+	r? : User
+	\where
+	r? \notin UserFriends~s?\\
+	UserFriendStatus' = UserFriendStatus \cup \{s?, r?\} \mapsto RequestSent\\
+	UserFriendStatus' = UserFriendStatus \cup \{r?, s?\} \mapsto RequestReceived\\
+	UserFriends'~s? = UserFriends~s? \cup \{r?\}\\
+	UserFriends'~r? = UserFriends~s? \cup \{s?\}
+\end{schema}
+
+\begin{schema}{FriendResponse}
+	\Delta UserManager\\
+	s? : User\\
+	r? : User\\
+	response? : Bool\\
+	\where
+	UserFriendStatus \{r?, s?\} = RequestReceived\\
+	(response? = True \land\\ 
+		\t1 UserFriendStatus'~\{r?, s?\} \mapsto confirmed \land\\ 
+		\t1 UserFriendStatus'~\{r?, s?\} \mapsto confirmed)\\
+	\lor (UserFriendStatus'~\{r?, s?\} \mapsto \emptyset \land\\ 
+		\t1 UserFriendStatus'~\{r?, s?\} \mapsto \emptyset \land\\
+		\t1 UserFriends'~s? = UserFriends~s? \setminus \{r?\} \land\\
+		\t1 USerFriends'~r? = UserFriends~r? \setminus \{s?\})
+\end{schema}
+
+\begin{schema}{RequestRendezvous}
+	\Delta UserManager\\
+	\Delta ParcelManager\\
+	s? : User\\
+	r? : User\\
+	p? : Parcel
+	\where
+	UserFriendStatus \{r?, s?\} \mapsto confirmed\\
+	p? \in UserParcels~s?\\
+	NOTSUREWHATTODOHERE
+\end{schema}
+
+\begin{schema}{RendezvousResponse}
+	\Delta UserManager\\
+	\Delta ParcelManager\\
+	s? : User\\
+	r? : User\\
+	p? : Parcel
+	\where
+	UserFriendStatus \{r?, s?\} \mapsto confirmed\\
+	p? \in UserParcels~s?\\
+	NOTSUREWHATTODOHERE
+\end{schema}
+
+\begin{schema}{FinalizeExchange}
+	\Delta UserManager\\
+	\Delta ParcelManager\\
+	s? : User\\
+	r? : User\\
+	p? : Parcel
+	\where
+	UserFriendStatus \{r?, s?\} \mapsto confirmed\\
+	p? \in UserParcels~s?\\
+	UserParcels'~s? = UserParcels~s? \setminus \{p?\}\\
+	UserParcels'~r? = UserParcels~r? \cup \{p?\}\\
+	(ParcelDestination~p? = r? \\
+	\t1 \land ParcelStatus'~p? \mapsto completed)\\
+	\lor ParcelStatus'~p \mapsto WithCourier\\
+\end{schema}
+
+initiateCourier(pID) -> uID
+A sends a parcel (status=0) to B. pID is added to B.parcels. Returns uID of closest mutual friend. A must then call uID->requestRendezvous(pID)
+
+isFriendWith(uID) -> bool
+Sent from A to B. Return true if uID is a member of B.friends
+
+isRatable(uID) -> bool
+Called on self. Looks up uID in ratable. True if exists.
+
+rate(bool)
+true: A calls on B. Remove first instance of B.id from A.ratable. Increment B.rating
+false: A calls on B. Remove first instance of B.id from A.ratable. Decrement B.rating
+
+\end{document}
