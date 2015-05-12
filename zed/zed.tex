@@ -1,9 +1,6 @@
 \documentclass{article}
 
-\usepackage[mathrm,colour,cntbysection]{czt}
-
-% count definitions per section
-\CountDefstrue
+\usepackage{zed-csp}
 
 \begin{document}
 
@@ -109,8 +106,8 @@ s? is for sender and r? is for receiver.\\
 	r? : User\\
 	res! : Bool
 	\where
-	res! = (UserFriendStatus \{r?, s?\} \mapsto confirmed\\
-	\t \land r? \sqsubset UserRatable~s?)
+	res! = (UserFriendStatus \{r?, s?\} \mapsto confirmed \land\\
+	\t1 r? \inbag UserRatable~s?)
 \end{schema}
 
 \begin{schema}{Rate}
@@ -120,10 +117,10 @@ s? is for sender and r? is for receiver.\\
 	up? : Bool
 	\where
 	UserFriendStatus \{r?, s?\} \mapsto confirmed\\
-	r? \sqsubset UserRatable~s?\\
-	(up? = True \and UserRating'~r? = UserRating~r? + 1)\\
-	\lor (UserRating'~r? = UserRating~r? - 1)\\
-	UserRatable'~s? = UserRatable'~s? \cupdot \lbrack r? \rbrack\\
+	r? \inbag UserRatable~s?\\
+	(up? = True \land UserRating'~r? = UserRating~r? + 1) \lor\\
+	\t1 (UserRating'~r? = UserRating~r? - 1)\\
+	UserRatable'~s? = UserRatable'~s? \cup \lbag r? \rbag\\
 \end{schema}
 
 \end{document}

@@ -12,3 +12,9 @@
 hs_err_pid*
 
 *.zargo~
+
+zed/zed.aux
+
+zed/zed.log
+
+zed/zed.synctex.gz
