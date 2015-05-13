@@ -31,7 +31,7 @@ s? is for sender and r? is for receiver.\\
 	\lor (UserFriendStatus'~\{r?, s?\} \mapsto \emptyset \land\\ 
 		\t1 UserFriendStatus'~\{r?, s?\} \mapsto \emptyset \land\\
 		\t1 UserFriends'~s? = UserFriends~s? \setminus \{r?\} \land\\
-		\t1 USerFriends'~r? = UserFriends~r? \setminus \{s?\})
+		\t1 UserFriends'~r? = UserFriends~r? \setminus \{s?\})
 \end{schema}
 
 \begin{schema}{RequestRendezvous}
@@ -41,9 +41,10 @@ s? is for sender and r? is for receiver.\\
 	r? : User\\
 	p? : Parcel
 	\where
-	UserFriendStatus \{r?, s?\} \mapsto confirmed\\
+	UserFriendStatus \{r?, s?\} = Confirmed\\
 	p? \in UserParcels~s?\\
-	NOTSUREWHATTODOHERE
+	ParcelStatus~p? = Uninitiated \lor ParcelStatus~p? = WithCourier\\
+	ParcelStatus'~p? = RendezvousRequested
 \end{schema}
 
 \begin{schema}{RendezvousResponse}
@@ -51,11 +52,15 @@ s? is for sender and r? is for receiver.\\
 	\Delta ParcelManager\\
 	s? : User\\
 	r? : User\\
-	p? : Parcel
+	p? : Parcel\\
+	response? : Bool
 	\where
 	UserFriendStatus \{r?, s?\} \mapsto confirmed\\
 	p? \in UserParcels~s?\\
-	NOTSUREWHATTODOHERE
+	p? \in UserParcels~r?\\
+	(response? = True \land ParcelStatus'~p? = RendezvousAccepted) \lor\\
+	\t1 ((ParcelCarrier~p? = ParcelSource~p? \land ParcelStatus'~p? = Uninitiated) \lor\\
+	\t2 (ParcelStatus'~p? = WithCourier))\\
 \end{schema}
 
 \begin{schema}{FinalizeExchange}
@@ -83,12 +88,22 @@ s? is for sender and r? is for receiver.\\
 	!courier : User
 	\where
 	UserFriendStatus \{r?, s?\} \mapsto confirmed\\
-	\exists c : User \in (UserFriends~s? \cap UserFriends~r? \land UserFriendStatus \{r?, c?\} \mapsto confirmed \land UserFriendStatus \{s?, c?\} \mapsto confirmed) FIX THIS\\
+	\exists c : User \in (UserFriends~s? \cap UserFriends~r? \land\\
+	\t1 UserFriendStatus \{r?, c?\} = confirmed \land UserFriendStatus \{s?, c?\} = confirmed \land\\
+	\t1 UserCourier~c? = True)\\
 	p? \in UserParcels~s?\\
 	ParcelStatus~p? \mapsto uninitiated\\
 	UserParcels'~r? = UserParcels'~r? \cup \{p?\}\\
 	
-	!courier = FINISH THIS
+	
+	
+	!courier = u1 : User \in (UserFriends~s? \cap UserFriends~r?) \land\\
+	\t1 UserCourier~u1 = True \land UserFriendStatus \{r?, u1\} = confirmed \land\\
+	\t1 UserFriendStatus \{s?, u1\} = confirmed \land\\
+	\t1 (\forall u2 : User \in (UserFriends~s? \cap UserFriends~r?) \land\\
+	\t2 UserCourier~u2 = True \land UserFriendStatus \{r?, u2\} = confirmed \land\\
+	\t2 UserFriendStatus \{s?, u2\} = confirmed \land\\
+	\t2 UserDistance \{s?, u1, r?\} \leq UserDistance \{s?, u2, r?\})
 \end{schema}
 
 \begin{schema}{IsFriendWith}

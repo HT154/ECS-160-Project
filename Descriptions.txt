@@ -53,8 +53,8 @@ User
 	requestRendezvous(pID)
 		A sends a parcel (status=0 or 3) to B with the proposed date and time saved to the parcel, if pID.status!=3 then parcel is added to B's parcels, sets parcel status to 1
 	rendezvousResponse(pID, bool)
-		true: A sends a parcel (status=1) to B. Parcel status set to 0 if parcel.source==parcel.carrier, 3 otherwise
-		false: A sends a parcel (status=1) to B. Parcel status is set to 2.
+		false: A sends a parcel (status=1) to B. Parcel status set to 0 if parcel.source==parcel.carrier, 3 otherwise
+		true: A sends a parcel (status=1) to B. Parcel status is set to 2.
 	
 	finalizeExchange(pID, bool)
 		true: A (carrier) sends a parcel (status=2) to B (next recipient). pID.carrier = B.id. If B.id!=pID.destination, set status=3 else 4. If B.id!=pID.destination, B must call pID.destination->requestRendezvous(pID)
