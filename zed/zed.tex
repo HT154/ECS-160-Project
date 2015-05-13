@@ -19,7 +19,7 @@ String == seq Char\\
 \end{zed}
 
 \begin{schema}{UserManager}
-	UserId : User \mapsto \natural \\
+	UserId : User \mapsto \nat \\
 	UserName : User \mapsto String \\
 	UserParcels : User \mapsto \power Parcel \\
 	UserFriends : User \mapsto \power User \\
@@ -34,7 +34,7 @@ String == seq Char\\
 \end{schema}
 
 \begin{schema}{ParcelManager}
-	ParcelId : Parcel \mapsto \natural\\
+	ParcelId : Parcel \mapsto \nat\\
 	ParcelDescription : Parcel \mapsto String\\
 	ParcelStatus : Parcel \mapsto ParcelStatus\\
 	ParcelDestination : Parcel \mapsto User\\
@@ -42,7 +42,7 @@ String == seq Char\\
 	ParcelCarrier : Parcel \mapsto User\\
 	ParcelLat : User \mapsto \real\\
 	ParcelLng : User \mapsto \real\\
-	ParcelTime : User \mapsto \natural\\
+	ParcelTime : User \mapsto \nat\\
 	\where
 \end{schema}
 
