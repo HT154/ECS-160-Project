@@ -4,7 +4,54 @@
 
 \begin{document}
 
-s? is for sender and r? is for receiver.\\
+By Andrew Green and Joshua Basch\\
+
+\begin{zed}
+	FriendStatus ::= Confirmed | RequestSent | RequestSent\\
+	ParcelStatus ::= \\
+	\t1 Uninitiated | RendezvousRequested | RendezvousAccepted | WithCourier | Completed \\
+	Bool ::= True | False\\
+	
+[Char]\\
+[User]\\
+[Parcel]\\
+String == seq Char\\
+\end{zed}
+
+\begin{schema}{UserManager}
+	UserId : User \mapsto \natural \\
+	UserName : User \mapsto String \\
+	UserParcels : User \mapsto \power Parcel \\
+	UserFriends : User \mapsto \power User \\
+	UserFriendStatus : \{User, User\} \mapsto FriendStatus \\
+	UserCourier : User \mapsto Bool \\
+	UserLat : User \mapsto \real \\
+	UserLng : User \mapsto \real \\
+	UserRating : User \mapsto \num \\
+	UserRatable : User \mapsto \bag User \\
+	UserDistance : \{User, User, User\} \mapsto \real \\
+	\where
+\end{schema}
+
+\begin{schema}{ParcelManager}
+	ParcelId : Parcel \mapsto \natural\\
+	ParcelDescription : Parcel \mapsto String\\
+	ParcelStatus : Parcel \mapsto ParcelStatus\\
+	ParcelDestination : Parcel \mapsto User\\
+	ParcelSource : Parcel \mapsto User\\
+	ParcelCarrier : Parcel \mapsto User\\
+	ParcelLat : User \mapsto \real\\
+	ParcelLng : User \mapsto \real\\
+	ParcelTime : User \mapsto \natural\\
+	\where
+\end{schema}
+
+\begin{schema}{Server}
+	Users : \power User \\
+	Parcels : \power Parcel \\
+	UserParcels : User \mapsto \power Parcel\\
+	\where
+\end{schema}
 
 \begin{schema}{RequestFriend}
 	\Delta UserManager\\
