@@ -11,15 +11,15 @@ import android.widget.ListView;
 import ecs160.deliveries.dummy.DummyContent;
 
 /**
- * A list fragment representing a list of Users. This fragment
+ * A list fragment representing a list of Parcels. This fragment
  * also supports tablet devices by allowing list items to be given an
  * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link UserDetailFragment}.
+ * currently being viewed in a {@link ParcelDetailFragment}.
  * <p/>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class UserListFragment extends ListFragment {
+public class ParcelListFragment extends ListFragment {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -47,7 +47,7 @@ public class UserListFragment extends ListFragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onUserSelected(String id);
+        public void onParcelSelected(String id);
     }
 
     /**
@@ -56,7 +56,7 @@ public class UserListFragment extends ListFragment {
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onUserSelected(String id) {
+        public void onParcelSelected(String id) {
         }
     };
 
@@ -64,7 +64,7 @@ public class UserListFragment extends ListFragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public UserListFragment() {
+    public ParcelListFragment() {
     }
 
     @Override
@@ -116,7 +116,7 @@ public class UserListFragment extends ListFragment {
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onUserSelected(DummyContent.ITEMS.get(position).id);
+        mCallbacks.onParcelSelected(DummyContent.ITEMS.get(position).id);
     }
 
     @Override

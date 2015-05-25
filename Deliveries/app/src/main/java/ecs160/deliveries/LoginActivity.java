@@ -30,8 +30,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import ecs160.deliveries.*;
-
 
 /**
  * A login screen that offers login via email/password.
@@ -55,11 +53,14 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private Intent mSuccessIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        mSuccessIntent = new Intent(this, MainActivity.class);
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -289,9 +290,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(false);
 
             if (success) {
-                //TODO: GO TO TAB THING
-                Intent tabIntent = new Intent(this, MainActivity.class);
-                startActivity(tabIntent);
+                startActivity(mSuccessIntent);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
