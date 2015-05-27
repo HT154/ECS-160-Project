@@ -4,6 +4,7 @@
     <string name="title_section1">Friends</string>
     <string name="title_section2">Parcels</string>
 
+    <string name="action_register">Register</string>
     <string name="action_add">Add</string>
 
     <string name="title_user_list">Users</string>

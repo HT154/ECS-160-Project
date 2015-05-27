@@ -37,6 +37,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     int mCurrentTab;
 
+    Integer mUID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +48,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
+        mUID = getIntent().getIntExtra("uid", 0);
+        System.out.println("UID: " + mUID);
         mUserListFragment = new UserListFragment();
         mParcelListFragment = new ParcelListFragment();
 
@@ -103,10 +107,12 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             switch (mCurrentTab) {
                 case 0:
                     Intent addFriendIntent = new Intent(this, AddFriendActivity.class);
+                    addFriendIntent.putExtra("uid", mUID);
                     startActivity(addFriendIntent);
                     return true;
                 case 1:
                     Intent addParcelIntent = new Intent(this, AddParcelActivity.class);
+                    addParcelIntent.putExtra("uid", mUID);
                     startActivity(addParcelIntent);
                     return true;
             }
@@ -134,12 +140,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     public void onUserSelected(String id) {
         Intent detailIntent = new Intent(this, UserDetailActivity.class);
         detailIntent.putExtra(UserDetailFragment.ARG_ITEM_ID, id);
+        detailIntent.putExtra("uid", mUID);
         startActivity(detailIntent);
     }
 
     public void onParcelSelected(String id) {
         Intent detailIntent = new Intent(this, ParcelDetailActivity.class);
         detailIntent.putExtra(UserDetailFragment.ARG_ITEM_ID, id);
+        detailIntent.putExtra("uid", mUID);
         startActivity(detailIntent);
     }
 

@@ -20,62 +20,54 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity {
+public class RegisterActivity extends Activity {
     // UI references.
     private AutoCompleteTextView mUsernameView;
     private EditText mPasswordView;
+    private EditText mConfirmPasswordView;
     private View mProgressView;
     private View mLoginFormView;
     private Intent mSuccessIntent;
-    private Intent mRegisterIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
         mSuccessIntent = new Intent(this, MainActivity.class);
-        mRegisterIntent = new Intent(this, RegisterActivity.class);
 
         // Set up the login form.
-        mUsernameView = (AutoCompleteTextView) findViewById(R.id.sign_in_name);
+        mUsernameView = (AutoCompleteTextView) findViewById(R.id.register_name);
 
-        mPasswordView = (EditText) findViewById(R.id.sign_in_password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mPasswordView = (EditText) findViewById(R.id.register_password);
+
+        mConfirmPasswordView = (EditText) findViewById(R.id.register_confirm_password);
+        mConfirmPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    attemptRegister();
                     return true;
                 }
                 return false;
             }
         });
 
-        Button mSignInButton = (Button) findViewById(R.id.sign_in_button);
-        mSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
-
-        Button mRegisterButton = (Button) findViewById(R.id.sign_in_register_button);
+        Button mRegisterButton = (Button) findViewById(R.id.register_button);
         mRegisterButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(mRegisterIntent);
+                attemptRegister();
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        mLoginFormView = findViewById(R.id.register_form);
+        mProgressView = findViewById(R.id.register_progress);
     }
 
     /**
@@ -83,7 +75,7 @@ public class LoginActivity extends Activity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    public void attemptLogin() {
+    public void attemptRegister() {
         // Reset errors.
         mUsernameView.setError(null);
         mPasswordView.setError(null);
@@ -91,6 +83,7 @@ public class LoginActivity extends Activity {
         // Store values at the time of the login attempt.
         String username = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String confirm = mConfirmPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -102,14 +95,20 @@ public class LoginActivity extends Activity {
             cancel = true;
         }
 
-        // Check for a valid email address.
+        // Check for a valid username.
         if (TextUtils.isEmpty(username)) {
             mUsernameView.setError(getString(R.string.error_field_required));
             focusView = mUsernameView;
             cancel = true;
-        } else if (!isEmailValid(username)) {
+        } else if (!isNameValid(username)) {
             mUsernameView.setError(getString(R.string.error_invalid_name));
             focusView = mUsernameView;
+            cancel = true;
+        }
+
+        if (!confirm.equals(password)) {
+            mConfirmPasswordView.setError(getString(R.string.error_mismatch_password));
+            focusView = mConfirmPasswordView;
             cancel = true;
         }
 
@@ -121,15 +120,15 @@ public class LoginActivity extends Activity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            API.get_instance().login(this, "loginCallback", username, password);
+            API.get_instance().register(this, "registerCallback", username, password);
         }
     }
 
-    public void loginCallback(JSONArray response) throws JSONException {
+    public void registerCallback(JSONArray response) throws JSONException {
         showProgress(false);
 
         if (response.length() > 0) {
-            mSuccessIntent.putExtra("uid", Integer.parseInt((String)((JSONObject) response.get(0)).get("id")));
+            mSuccessIntent.putExtra("uid", (Integer)response.get(0));
             startActivity(mSuccessIntent);
         } else {
             mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -139,7 +138,7 @@ public class LoginActivity extends Activity {
 
     }
 
-    private boolean isEmailValid(String email) {
+    private boolean isNameValid(String email) {
         //TODO: Replace this with your own logic
         return email.length() > 2;
     }
