@@ -23,12 +23,13 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editText" />
+            android:id="@+id/add_friend_username"
+            android:inputType="text" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Request Friend"
-            android:id="@+id/button" />
+            android:id="@+id/add_friend_request" />
     </LinearLayout>
 </RelativeLayout>

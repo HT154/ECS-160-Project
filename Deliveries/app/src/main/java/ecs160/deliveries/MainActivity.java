@@ -35,9 +35,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     UserListFragment mUserListFragment;
     ParcelListFragment mParcelListFragment;
 
-    int mCurrentTab;
+    private int mCurrentTab;
 
-    Integer mUID;
+    private int mUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         mUID = getIntent().getIntExtra("uid", 0);
-        System.out.println("UID: " + mUID);
+
         mUserListFragment = new UserListFragment();
         mParcelListFragment = new ParcelListFragment();
 
@@ -192,4 +192,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
 }

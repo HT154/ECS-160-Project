@@ -78,11 +78,6 @@ public class LoginActivity extends Activity {
         mProgressView = findViewById(R.id.login_progress);
     }
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
     public void attemptLogin() {
         // Reset errors.
         mUsernameView.setError(null);
@@ -121,22 +116,21 @@ public class LoginActivity extends Activity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            API.get_instance().login(this, "loginCallback", username, password);
+            API.login(this, "loginCallback", username, password);
         }
     }
 
-    public void loginCallback(JSONArray response) throws JSONException {
+    public void loginCallback(Object res) throws JSONException {
         showProgress(false);
+        JSONArray response = (JSONArray) res;
 
         if (response.length() > 0) {
-            mSuccessIntent.putExtra("uid", Integer.parseInt((String)((JSONObject) response.get(0)).get("id")));
+            mSuccessIntent.putExtra("uid", response.getInt(0));
             startActivity(mSuccessIntent);
         } else {
             mPasswordView.setError(getString(R.string.error_incorrect_password));
             mPasswordView.requestFocus();
         }
-
-
     }
 
     private boolean isEmailValid(String email) {

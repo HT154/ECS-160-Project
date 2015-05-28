@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -30,6 +31,7 @@ public class RegisterActivity extends Activity {
     private AutoCompleteTextView mUsernameView;
     private EditText mPasswordView;
     private EditText mConfirmPasswordView;
+    private CheckBox mCourierCheckbox;
     private View mProgressView;
     private View mLoginFormView;
     private Intent mSuccessIntent;
@@ -57,6 +59,8 @@ public class RegisterActivity extends Activity {
                 return false;
             }
         });
+
+        mCourierCheckbox = (CheckBox) findViewById(R.id.register_courier_checkbox);
 
         Button mRegisterButton = (Button) findViewById(R.id.register_button);
         mRegisterButton.setOnClickListener(new OnClickListener() {
@@ -120,22 +124,20 @@ public class RegisterActivity extends Activity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            API.get_instance().register(this, "registerCallback", username, password);
+            API.register(this, "registerCallback", username, password, mCourierCheckbox.isChecked());
         }
     }
 
-    public void registerCallback(JSONArray response) throws JSONException {
+    public void registerCallback(Object res) throws JSONException {
         showProgress(false);
-
+        JSONArray response = (JSONArray) res;
         if (response.length() > 0) {
-            mSuccessIntent.putExtra("uid", (Integer)response.get(0));
+            mSuccessIntent.putExtra("uid", response.getInt(0));
             startActivity(mSuccessIntent);
         } else {
             mPasswordView.setError(getString(R.string.error_incorrect_password));
             mPasswordView.requestFocus();
         }
-
-
     }
 
     private boolean isNameValid(String email) {
