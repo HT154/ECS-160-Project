@@ -2,6 +2,7 @@ package ecs160.deliveries;
 
 import java.util.Locale;
 
+import android.app.IntentService;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -49,6 +50,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         mUID = getIntent().getIntExtra("uid", 0);
+
+        Intent locationIntent = new Intent(this, LocationUpdater.class);
+        locationIntent.putExtra("uid", mUID);
+        stopService(locationIntent);
+        startService(locationIntent);
 
         mUserListFragment = new UserListFragment();
         mParcelListFragment = new ParcelListFragment();
