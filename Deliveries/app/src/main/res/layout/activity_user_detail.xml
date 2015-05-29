@@ -1,4 +1,60 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:id="@+id/user_detail_container"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    tools:context="ecs160.deliveries.UserDetailActivity" tools:ignore="MergeRootFrame" />
+    tools:context="ecs160.deliveries.UserDetailActivity" tools:ignore="MergeRootFrame" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Placeholder Name"
+        android:id="@+id/TextUserName"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="18dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Feedback Score"
+        android:id="@+id/TextFeedbackScore"
+        android:layout_below="@+id/TextUserName"
+        android:layout_alignStart="@+id/TextUserName" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rate Up"
+        android:enabled="false"
+        android:id="@+id/ButtonRateUp"
+        android:layout_below="@+id/TextFeedbackScore"
+        android:layout_alignStart="@+id/TextFeedbackScore" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rate Down"
+        android:enabled="false"
+        android:id="@+id/ButtonRateDown"
+        android:layout_below="@+id/TextFeedbackScore"
+        android:layout_toEndOf="@+id/ButtonRateUp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Accept Request"
+        android:enabled="false"
+        android:id="@+id/ButtonAcceptFriendRequest"
+        android:layout_below="@+id/ButtonRateUp"
+        android:layout_alignStart="@+id/ButtonRateUp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Decline Request"
+        android:enabled="false"
+        android:id="@+id/ButtonDeclineFriendRequest"
+        android:layout_below="@+id/ButtonRateDown"
+        android:layout_toEndOf="@+id/ButtonAcceptFriendRequest" />
+
+</RelativeLayout>
