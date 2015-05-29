@@ -49,14 +49,15 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        mUID = getIntent().getIntExtra("uid", 0);
+        mUID = getIntent().getIntExtra("uid", 20);
 
         Intent locationIntent = new Intent(this, LocationUpdater.class);
         locationIntent.putExtra("uid", mUID);
-        stopService(locationIntent);
         startService(locationIntent);
 
         mUserListFragment = new UserListFragment();
+        mUserListFragment.setUID(mUID);
+
         mParcelListFragment = new ParcelListFragment();
 
         // Create the adapter that will return a fragment for each of the three

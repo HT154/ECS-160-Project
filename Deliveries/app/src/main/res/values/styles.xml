@@ -2,7 +2,16 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        <item name="stickyListHeadersListViewStyle">@style/Widget.MyApp.ListView</item>
     </style>
+
+    <style name="Widget.MyApp.ListView" parent="@android:style/Widget.ListView">
+        <item name="android:paddingLeft">0px</item>
+        <item name="android:paddingRight">0px</item>
+    </style>
+
+    <color name="header_normal">#ffa8a8a8</color>
+    <color name="header_pressed">#ffa8a8a8</color>
+    <color name="menu_section_header">#FFDDDDDD</color>
 
 </resources>

@@ -36,7 +36,8 @@ public class API {
 
     public static void parcels(Object sender, String method, int uid) {
         API.get_instance()._parcels(sender, method, uid);
-    } //returns dictionary: {'confirmed': array of confirmed friends, 'requestSent': array of outgoing friend requests, 'requestReceived': array of incoming friend requests}
+    } //returns dictionary: {'rendezvousDeclined': array, 'rendezvousRequested': array, 'rendezvousAccepted': array,
+        // 'inCourierPosession': array, 'completed': array}
     public static void addParcel(Object sender, String method, int uid, int destination, String description, double lat,
                                  double lng, int time, boolean courier) {
         API.get_instance()._addParcel(sender, method, uid, destination, description, lat, lng, time, courier);

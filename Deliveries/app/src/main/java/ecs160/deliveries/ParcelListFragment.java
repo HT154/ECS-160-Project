@@ -1,31 +1,36 @@
 package ecs160.deliveries;
 
 import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 
+import org.json.JSONArray;
+
 import ecs160.deliveries.dummy.DummyContent;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 /**
- * A list fragment representing a list of Parcels. This fragment
+ * A list fragment representing a list of Users. This fragment
  * also supports tablet devices by allowing list items to be given an
  * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link ParcelDetailFragment}.
+ * currently being viewed in a {@link UserDetailFragment}.
  * <p/>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class ParcelListFragment extends ListFragment {
+public class ParcelListFragment extends Fragment {
 
-    /**
-     * The serialization (saved instance state) Bundle key representing the
-     * activated item position. Only used on tablets.
-     */
-    private static final String STATE_ACTIVATED_POSITION = "activated_position";
+    private int mUID;
+    private SLHAdapter adapter;
+    private static String[] sectionTitles = {"Uninitiated Parcels", "Rondezvous Requested", "Rondezvous Accepted", "With Courier", "Completed"};
+    private JSONArray parcels = new JSONArray();
 
     /**
      * The fragment's current callback object, which is notified of list item
@@ -47,7 +52,7 @@ public class ParcelListFragment extends ListFragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onParcelSelected(String id);
+        public void onUserSelected(String id);
     }
 
     /**
@@ -56,7 +61,7 @@ public class ParcelListFragment extends ListFragment {
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onParcelSelected(String id) {
+        public void onUserSelected(String id) {
         }
     };
 
@@ -67,27 +72,42 @@ public class ParcelListFragment extends ListFragment {
     public ParcelListFragment() {
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
-                getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                DummyContent.ITEMS));
+    public void setUID(int uid) {
+        mUID = uid;
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        refresh();
+    }
 
-        // Restore the previously serialized activated item position.
-        if (savedInstanceState != null
-                && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
-            setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
-        }
+    public void refresh() {
+        API.parcels(this, "parcelsCallback", mUID);
+    }
+
+    public void parcelsCallback(Object res) {
+        parcels = (JSONArray) res;
+        adapter.setSections(parcels);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View content = inflater.inflate(R.layout.fragment_list, container, false);
+
+        StickyListHeadersListView stickyList = (StickyListHeadersListView) content.findViewById(R.id.slh_list);
+        adapter = new SLHAdapter(this.getActivity(), mUID, parcels, sectionTitles, "name");
+        stickyList.setAdapter(adapter);
+        stickyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mCallbacks.onUserSelected(Long.toString(id));
+            }
+        });
+
+        return content;
     }
 
     @Override
@@ -108,45 +128,5 @@ public class ParcelListFragment extends ListFragment {
 
         // Reset the active callbacks interface to the dummy implementation.
         mCallbacks = sDummyCallbacks;
-    }
-
-    @Override
-    public void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
-
-        // Notify the active callbacks interface (the activity, if the
-        // fragment is attached to one) that an item has been selected.
-        mCallbacks.onParcelSelected(DummyContent.ITEMS.get(position).id);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mActivatedPosition != ListView.INVALID_POSITION) {
-            // Serialize and persist the activated item position.
-            outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
-        }
-    }
-
-    /**
-     * Turns on activate-on-click mode. When this mode is on, list items will be
-     * given the 'activated' state when touched.
-     */
-    public void setActivateOnItemClick(boolean activateOnItemClick) {
-        // When setting CHOICE_MODE_SINGLE, ListView will automatically
-        // give items the 'activated' state when touched.
-        getListView().setChoiceMode(activateOnItemClick
-                ? ListView.CHOICE_MODE_SINGLE
-                : ListView.CHOICE_MODE_NONE);
-    }
-
-    private void setActivatedPosition(int position) {
-        if (position == ListView.INVALID_POSITION) {
-            getListView().setItemChecked(mActivatedPosition, false);
-        } else {
-            getListView().setItemChecked(position, true);
-        }
-
-        mActivatedPosition = position;
     }
 }
