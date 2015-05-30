@@ -1,4 +1,60 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:id="@+id/parcel_detail_container"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    tools:context="ecs160.deliveries.ParcelDetailActivity" tools:ignore="MergeRootFrame" />
+    tools:context="ecs160.deliveries.ParcelDetailActivity" tools:ignore="MergeRootFrame" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Here&apos;s my great description"
+        android:id="@+id/TextParcelDescription"
+        android:layout_gravity="left|top" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Source:"
+        android:id="@+id/TextParcelSource"
+        android:layout_below="@+id/TextParcelDescription"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Destination"
+        android:id="@+id/TextParcelDestination"
+        android:layout_below="@+id/TextParcelSource"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Carrier"
+        android:id="@+id/TextParcelCarrier"
+        android:layout_below="@+id/TextParcelDestination"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Finalize"
+        android:id="@+id/ButtonParcelFinalize"
+        android:layout_below="@+id/TextParcelTime"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Place:"
+        android:id="@+id/TextParcelPlace"
+        android:layout_below="@+id/TextParcelCarrier"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time"
+        android:id="@+id/TextParcelTime"
+        android:layout_below="@+id/TextParcelPlace"
+        android:layout_alignParentStart="true" />
+</RelativeLayout>
