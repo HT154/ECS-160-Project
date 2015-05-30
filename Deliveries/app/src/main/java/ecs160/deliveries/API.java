@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -16,6 +17,12 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 public class API {
+
+    public static void user(Object sender, String method, int uid){
+        API.get_instance()._user(sender, method, uid);
+    } //returns JSONArray with some items and stuff
+    //TODO: Write better return value here
+    //Looks like this [{"id":"15","name":"jvb2","pass":"qwerty","courier":"1","lat":"0","lng":"0","rating":"0","uid1":"20","uid2":"24","status":"1"}]
 
     public static void register(Object sender, String method, String username, String password, boolean courier) {
         API.get_instance()._register(sender, method, username, password, courier);
@@ -70,7 +77,14 @@ public class API {
 
 
 
+    private void _user(Object sender, String method, int uid){
+        Dictionary<String, String> args = new Hashtable<String, String>();
+        args.put("uid1", Integer.toString(uid));
+        args.put("uid2", Integer.toString(24)); //TODO: Remove hardcoded value
 
+        APITask task = new APITask(sender, method, "user", args);
+        task.execute();
+    }
 
     private void _register(Object sender, String method, String username, String password, boolean courier) {
         Dictionary<String, String> args = new Hashtable<String, String>();
@@ -276,8 +290,11 @@ public class API {
                 try {
                     Method m = mSender.getClass().getMethod(mMethod, Object.class);
                     m.invoke(mSender, result);
+                } catch (InvocationTargetException e){
+                    System.err.println("Invocation problem: " + e.getCause() + " " + e.getMessage() + " " + mMethod + " in class " + mSender.getClass().getName() + " with result " + result.toString());
+                    System.err.println(e);
                 } catch (Exception e) {
-                    System.err.println("Callback missing: " + mMethod + " in class " + getClass().getName());
+                    System.err.println("Callback missing: " + mMethod + " in class " + mSender.getClass().getName() + " with result " + result.toString());
                     System.err.println(e);
                 }
             }

@@ -2,6 +2,7 @@ package ecs160.deliveries;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONException;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ public class UserDetailActivity extends ActionBarActivity {
     Button accept_request;
     TextView feedback_score;
     TextView text_name;
+    int feedback_int_value;
 
     int mUID;
     int vUID;
@@ -65,6 +67,11 @@ public class UserDetailActivity extends ActionBarActivity {
                     .add(R.id.user_detail_container, fragment)
                     .commit();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         /*Added by Andrew
         Wires up the buttons so that they have the correct functions
@@ -79,35 +86,46 @@ public class UserDetailActivity extends ActionBarActivity {
         feedback_score = (TextView) findViewById(R.id.TextFeedbackScore);
         text_name = (TextView) findViewById(R.id.TextUserName);
 
-        //TODO: set name based on "name" parameter
-        //TODO: set feedback score based on "rating" parameter
+        mUID = getIntent().getIntExtra("uid", -1);
+        vUID = getIntent().getIntExtra("item_id", -1); //TODO: As is this returns the ID for the transaction, we need the ID for the user 2 passed in somehow
 
-        mUID = getIntent().getIntExtra("uid", 20);
-        vUID = getIntent().getIntExtra("item_id", 20);
+        //Call users to setup initial state
+        API.user(this, "UserCallback", mUID);
 
         //Setup wires
         negative_feedback.setOnClickListener(
                 new View.OnClickListener() {
+                    @Override
                     public void onClick(View v) {
-                        Feedback(false);}
+                        Feedback(false);
+                    }
                 }
         );
 
         positive_feedback.setOnClickListener(
-                new View.OnClickListener(){
-                    public void onClick(View v){Feedback(true);}
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Feedback(true);
+                    }
                 }
         );
 
         decline_request.setOnClickListener(
-                new View.OnClickListener(){
-                    public void onClick(View v){Friend(false);}
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Friend(false);
+                    }
                 }
         );
 
         accept_request.setOnClickListener(
-                new View.OnClickListener(){
-                    public void onClick(View v){Friend(true);}
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Friend(true);
+                    }
                 }
         );
 
@@ -117,11 +135,19 @@ public class UserDetailActivity extends ActionBarActivity {
         API.friends(this, "CheckFriendCallback", mUID);
     }
 
+    //Returned by API call, sets up some initial values
+    public void UserCallback(Object res) throws JSONException{
+        JSONObject user = ((JSONArray) res).getJSONObject(0);
+        text_name.setText(user.getString("name"));
+        feedback_int_value = user.getInt("rating");
+        feedback_score.setText(feedback_int_value + "");
+    }
+
     //Check the list to set the initial state of accept/reject friend request
-    public void CheckFriendCallback(Object res) throws org.json.JSONException {
-        JSONArray[] arr = (JSONArray[]) res;
-        for(int i=0; i<arr[0].length(); i++) {
-            if(arr[0].getJSONObject(i).getInt
+    public void CheckFriendCallback(Object res) throws JSONException {
+        JSONArray arr = (JSONArray) ((JSONArray) res).get(0);
+        for(int i=0; i<arr.length(); i++) {
+            if(arr.getJSONObject(i).getInt
                     ("uid2") == vUID) {
                 decline_request.setEnabled(true);
                 accept_request.setEnabled(true);
@@ -132,6 +158,9 @@ public class UserDetailActivity extends ActionBarActivity {
 
     //A feedback button was clicked
     private void Feedback(boolean is_positive){
+        if(is_positive) feedback_int_value++;
+        else feedback_int_value--;
+
         API.rate(mUID, vUID, is_positive);
         API.ratable(this, "RatableCallback", mUID, vUID);
 
@@ -140,11 +169,11 @@ public class UserDetailActivity extends ActionBarActivity {
         positive_feedback.setEnabled(false);
     }
 
-    public void RatableCallback(Object res) {
-        boolean is_ratable = (boolean) res;
-        negative_feedback.setEnabled(is_ratable);
-        positive_feedback.setEnabled(is_ratable);
-        //TODO: update feedback score based on parameter
+    public void RatableCallback(Object res) throws JSONException {
+        int rate_count = (int) ((JSONArray) res).get(0); //TODO: Fix this
+        negative_feedback.setEnabled(rate_count > 0);
+        positive_feedback.setEnabled(rate_count > 0);
+        feedback_score.setText(feedback_int_value + "");
     }
 
     //A friend button was clicked
