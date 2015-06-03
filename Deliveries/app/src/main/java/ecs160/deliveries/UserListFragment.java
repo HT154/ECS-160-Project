@@ -31,6 +31,7 @@ public class UserListFragment extends Fragment {
     private SLHAdapter adapter;
     private StickyListHeadersListView listView;
     private static String[] sectionTitles = {"Incoming Requests", "Confirmed", "Outgoing Requests"};
+    private static String idKey = "uid2";
     private JSONArray users = new JSONArray();
 
     /**
@@ -53,7 +54,7 @@ public class UserListFragment extends Fragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onUserSelected(String id);
+        public void onUserSelected(int id);
     }
 
     /**
@@ -62,7 +63,7 @@ public class UserListFragment extends Fragment {
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onUserSelected(String id) {
+        public void onUserSelected(int id) {
         }
     };
 
@@ -99,12 +100,12 @@ public class UserListFragment extends Fragment {
         View content = inflater.inflate(R.layout.fragment_list, container, false);
 
         listView = (StickyListHeadersListView) content.findViewById(R.id.slh_list);
-        adapter = new SLHAdapter(this.getActivity(), mUID, users, sectionTitles, "name");
+        adapter = new SLHAdapter(this.getActivity(), mUID, users, sectionTitles, idKey, "name");
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mCallbacks.onUserSelected(Long.toString(id));
+                mCallbacks.onUserSelected((int) id);
             }
         });
         listView.setOnHeaderClickListener(new StickyListHeadersListView.OnHeaderClickListener() {

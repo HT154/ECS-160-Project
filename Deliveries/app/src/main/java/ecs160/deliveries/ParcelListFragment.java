@@ -16,20 +16,12 @@ import org.json.JSONArray;
 import ecs160.deliveries.dummy.DummyContent;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-/**
- * A list fragment representing a list of Users. This fragment
- * also supports tablet devices by allowing list items to be given an
- * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link UserDetailFragment}.
- * <p/>
- * Activities containing this fragment MUST implement the {@link Callbacks}
- * interface.
- */
 public class ParcelListFragment extends Fragment {
 
     private int mUID;
     private SLHAdapter adapter;
-    private static String[] sectionTitles = {"Uninitiated Parcels", "Rondezvous Requested", "Rondezvous Accepted", "With Courier", "Completed"};
+    private static String[] sectionTitles = {"Uninitiated Parcels", "Rendezvous Requested", "Rendezvous Accepted", "With Courier", "Completed"};
+    private static String idKey = "id";
     private JSONArray parcels = new JSONArray();
 
     /**
@@ -52,7 +44,7 @@ public class ParcelListFragment extends Fragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onUserSelected(String id);
+        public void onParcelSelected(int id);
     }
 
     /**
@@ -61,7 +53,7 @@ public class ParcelListFragment extends Fragment {
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onUserSelected(String id) {
+        public void onParcelSelected(int id) {
         }
     };
 
@@ -98,12 +90,12 @@ public class ParcelListFragment extends Fragment {
         View content = inflater.inflate(R.layout.fragment_list, container, false);
 
         StickyListHeadersListView stickyList = (StickyListHeadersListView) content.findViewById(R.id.slh_list);
-        adapter = new SLHAdapter(this.getActivity(), mUID, parcels, sectionTitles, "name");
+        adapter = new SLHAdapter(this.getActivity(), mUID, parcels, sectionTitles, idKey, "description");
         stickyList.setAdapter(adapter);
         stickyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mCallbacks.onUserSelected(Long.toString(id));
+                mCallbacks.onParcelSelected((int) id);
             }
         });
 

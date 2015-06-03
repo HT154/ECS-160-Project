@@ -18,12 +18,6 @@ import java.util.Hashtable;
 
 public class API {
 
-    public static void user(Object sender, String method, int uid){
-        API.get_instance()._user(sender, method, uid);
-    } //returns JSONArray with some items and stuff
-    //TODO: Write better return value here
-    //Looks like this [{"id":"15","name":"jvb2","pass":"qwerty","courier":"1","lat":"0","lng":"0","rating":"0","uid1":"20","uid2":"24","status":"1"}]
-
     public static void register(Object sender, String method, String username, String password, boolean courier) {
         API.get_instance()._register(sender, method, username, password, courier);
     } //returns 1-item array with integer id of new user
@@ -40,11 +34,22 @@ public class API {
     public static void friendResponse(int uid1, int uid2, boolean accept) {
         API.get_instance()._friendResponse(uid1, uid2, accept);
     }
+    public static void user(Object sender, String method, int uid1){
+        API.get_instance()._user(sender, method, uid1);
+    } //returns JSONArray with some items and stuff
+    public static void user(Object sender, String method, int uid1, int uid2){
+        API.get_instance()._user(sender, method, uid1, uid2);
+    } //returns JSONArray with some items and stuff
+    //TODO: Write better return value here
+    //Looks like this [{"id":"15","name":"jvb2","pass":"qwerty","courier":"1","lat":"0","lng":"0","rating":"0","uid1":"20","uid2":"24","status":"1"}]
 
     public static void parcels(Object sender, String method, int uid) {
         API.get_instance()._parcels(sender, method, uid);
     } //returns dictionary: {'rendezvousDeclined': array, 'rendezvousRequested': array, 'rendezvousAccepted': array,
         // 'inCourierPosession': array, 'completed': array}
+    public static void parcel(Object sender, String method, int pid) {
+        API.get_instance()._parcel(sender, method, pid);
+    }
     public static void addParcel(Object sender, String method, int uid, int destination, String description, double lat,
                                  double lng, int time, boolean courier) {
         API.get_instance()._addParcel(sender, method, uid, destination, description, lat, lng, time, courier);
@@ -76,11 +81,18 @@ public class API {
 
 
 
+    private void _user(Object sender, String method, int uid1, int uid2){
+        Dictionary<String, String> args = new Hashtable<String, String>();
+        args.put("uid1", Integer.toString(uid1));
+        args.put("uid2", Integer.toString(uid2));
+
+        APITask task = new APITask(sender, method, "user", args);
+        task.execute();
+    }
 
     private void _user(Object sender, String method, int uid){
         Dictionary<String, String> args = new Hashtable<String, String>();
         args.put("uid1", Integer.toString(uid));
-        args.put("uid2", Integer.toString(24)); //TODO: Remove hardcoded value
 
         APITask task = new APITask(sender, method, "user", args);
         task.execute();
@@ -142,6 +154,14 @@ public class API {
         args.put("uid", Integer.toString(uid));
 
         APITask task = new APITask(sender, method, "parcels", args);
+        task.execute();
+    }
+
+    private void _parcel(Object sender, String method, int pid) {
+        Dictionary<String,String > args = new Hashtable<String, String>();
+        args.put("pid", Integer.toString(pid));
+
+        APITask task = new APITask(sender, method, "parcel", args);
         task.execute();
     }
 
@@ -253,6 +273,7 @@ public class API {
                 BufferedInputStream bis = null;
                 URL url = new URL(u.toString());
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                System.out.println(url);
 
                 con.setConnectTimeout(10000);
                 con.setReadTimeout(10000);

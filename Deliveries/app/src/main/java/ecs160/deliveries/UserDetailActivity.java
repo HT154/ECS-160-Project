@@ -16,15 +16,6 @@ import android.view.MenuItem;
 
 import java.util.Dictionary;
 
-/**
- * An activity representing a single User detail screen. This
- * activity is only used on handset devices. On tablet-size devices,
- * item details are presented side-by-side with a list of items
- * in a {@link UserListActivity}.
- * <p/>
- * This activity is mostly just a 'shell' activity containing nothing
- * more than a {@link UserDetailFragment}.
- */
 public class UserDetailActivity extends ActionBarActivity {
     //Some simple getters to facilitate grabbing the UI elements without always having to call get ID
     Button negative_feedback;
@@ -45,28 +36,6 @@ public class UserDetailActivity extends ActionBarActivity {
 
         // Show the Up button in the action bar.
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
-        // savedInstanceState is non-null when there is fragment state
-        // saved from previous configurations of this activity
-        // (e.g. when rotating the screen from portrait to landscape).
-        // In this case, the fragment will automatically be re-added
-        // to its container so we don't need to manually add it.
-        // For more information, see the Fragments API guide at:
-        //
-        // http://developer.android.com/guide/components/fragments.html
-        //
-        if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putString(UserDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(UserDetailFragment.ARG_ITEM_ID));
-            UserDetailFragment fragment = new UserDetailFragment();
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.user_detail_container, fragment)
-                    .commit();
-        }
     }
 
     @Override
@@ -86,18 +55,21 @@ public class UserDetailActivity extends ActionBarActivity {
         feedback_score = (TextView) findViewById(R.id.TextFeedbackScore);
         text_name = (TextView) findViewById(R.id.TextUserName);
 
+        negative_feedback.setVisibility(View.GONE);
+        positive_feedback.setVisibility(View.GONE);
+
         mUID = getIntent().getIntExtra("uid", -1);
-        vUID = getIntent().getIntExtra("item_id", -1); //TODO: As is this returns the ID for the transaction, we need the ID for the user 2 passed in somehow
+        vUID = getIntent().getIntExtra("target", -1);
 
         //Call users to setup initial state
-        API.user(this, "UserCallback", mUID);
+        API.user(this, "userCallback", vUID, mUID);
 
         //Setup wires
         negative_feedback.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Feedback(false);
+                        feedback(false);
                     }
                 }
         );
@@ -106,7 +78,7 @@ public class UserDetailActivity extends ActionBarActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Feedback(true);
+                        feedback(true);
                     }
                 }
         );
@@ -115,7 +87,7 @@ public class UserDetailActivity extends ActionBarActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Friend(false);
+                        friend(false);
                     }
                 }
         );
@@ -124,60 +96,66 @@ public class UserDetailActivity extends ActionBarActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Friend(true);
+                        friend(true);
                     }
                 }
         );
 
         //Enable buttons based on state
         //Don't enable buttons before confirmation
-        API.ratable(this, "RatableCallback", mUID, vUID);
-        API.friends(this, "CheckFriendCallback", mUID);
+        API.ratable(this, "ratableCallback", mUID, vUID);
     }
 
     //Returned by API call, sets up some initial values
-    public void UserCallback(Object res) throws JSONException{
-        JSONObject user = ((JSONArray) res).getJSONObject(0);
-        text_name.setText(user.getString("name"));
-        feedback_int_value = user.getInt("rating");
-        feedback_score.setText(feedback_int_value + "");
-    }
+    public void userCallback(Object res) throws JSONException{
+        JSONArray response = (JSONArray) res;
 
-    //Check the list to set the initial state of accept/reject friend request
-    public void CheckFriendCallback(Object res) throws JSONException {
-        JSONArray arr = (JSONArray) ((JSONArray) res).get(0);
-        for(int i=0; i<arr.length(); i++) {
-            if(arr.getJSONObject(i).getInt
-                    ("uid2") == vUID) {
-                decline_request.setEnabled(true);
-                accept_request.setEnabled(true);
-                break;
+        if (response.length() > 0) {
+            JSONObject user = response.getJSONObject(0);
+
+            text_name.setText(user.getString("name"));
+            feedback_int_value = Integer.parseInt(user.getString("rating"));
+            feedback_score.setText(feedback_int_value + "");
+
+            int friendStatus = Integer.parseInt(user.getString("status"));
+            System.out.println("!!!");
+            System.out.println(friendStatus);
+            if (friendStatus == 2) {
+
+                decline_request.setVisibility(View.VISIBLE);
+                accept_request.setVisibility(View.VISIBLE);
             }
         }
     }
 
     //A feedback button was clicked
-    private void Feedback(boolean is_positive){
+    private void feedback(boolean is_positive){
         if(is_positive) feedback_int_value++;
         else feedback_int_value--;
 
         API.rate(mUID, vUID, is_positive);
-        API.ratable(this, "RatableCallback", mUID, vUID);
+        API.ratable(this, "ratableCallback", mUID, vUID);
 
         //Immediately set to prevent user from pushing the button too much
         negative_feedback.setEnabled(false);
         positive_feedback.setEnabled(false);
     }
 
-    public void RatableCallback(Object res) throws JSONException {
-        int rate_count = (int) ((JSONArray) res).get(0); //TODO: Fix this
-        negative_feedback.setEnabled(rate_count > 0);
-        positive_feedback.setEnabled(rate_count > 0);
+    public void ratableCallback(Object res) throws JSONException {
+        JSONArray response = (JSONArray) res;
+        int rate_count = response.getInt(0);
+        if (rate_count > 0) {
+            negative_feedback.setEnabled(true);
+            positive_feedback.setEnabled(true);
+            negative_feedback.setVisibility(View.VISIBLE);
+            positive_feedback.setVisibility(View.VISIBLE);
+        }
+
         feedback_score.setText(feedback_int_value + "");
     }
 
     //A friend button was clicked
-    private void Friend(boolean is_accept) {
+    private void friend(boolean is_accept) {
         API.friendResponse(mUID, vUID, is_accept);
         decline_request.setEnabled(false);
         accept_request.setEnabled(false);

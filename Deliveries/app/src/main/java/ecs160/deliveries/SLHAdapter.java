@@ -20,20 +20,23 @@ public class SLHAdapter extends BaseAdapter implements StickyListHeadersAdapter 
     private JSONArray arrayOfSections;
     private String[] sectionNames;
     private String mKey;
+    private String mIDKey;
     private ArrayList<Integer> cumulativeCounts = new ArrayList<Integer>();
     private int totalCount = 0;
 
     private LayoutInflater inflater;
 
-    public SLHAdapter(Context context, int uid, JSONArray sections, String[] names, String key) {
+    public SLHAdapter(Context context, int uid, JSONArray sections, String[] names, String idKey, String key) {
         inflater = LayoutInflater.from(context);
         mKey = key;
+        mIDKey = idKey;
         sectionNames = names;
         setSections(sections);
     }
 
     public void setSections(JSONArray sections) {
         arrayOfSections = sections;
+        totalCount = 0;
         cumulativeCounts.clear();
 
         for (int i = 0; i < arrayOfSections.length(); i++) {
@@ -73,7 +76,7 @@ public class SLHAdapter extends BaseAdapter implements StickyListHeadersAdapter 
     public long getItemId(int position) {
         try {
             System.out.println(getItem(position));
-            return Long.parseLong(((JSONObject)getItem(position)).getString("id"));
+            return Long.parseLong(((JSONObject)getItem(position)).getString(mIDKey));
         } catch (Exception e) {
             System.out.println(e);
         }

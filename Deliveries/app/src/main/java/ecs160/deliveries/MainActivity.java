@@ -59,6 +59,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         mUserListFragment.setUID(mUID);
 
         mParcelListFragment = new ParcelListFragment();
+        mParcelListFragment.setUID(mUID);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -94,6 +95,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     @Override
     protected void onResume() {
         super.onResume();
+        mUserListFragment.refresh();
+        mParcelListFragment.refresh();
     }
 
     @Override
@@ -144,16 +147,16 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
-    public void onUserSelected(String id) {
+    public void onUserSelected(int uid) {
         Intent detailIntent = new Intent(this, UserDetailActivity.class);
-        detailIntent.putExtra(UserDetailFragment.ARG_ITEM_ID, id);
+        detailIntent.putExtra("target", uid);
         detailIntent.putExtra("uid", mUID);
         startActivity(detailIntent);
     }
 
-    public void onParcelSelected(String id) {
+    public void onParcelSelected(int pid) {
         Intent detailIntent = new Intent(this, ParcelDetailActivity.class);
-        detailIntent.putExtra(UserDetailFragment.ARG_ITEM_ID, id);
+        detailIntent.putExtra("target", pid);
         detailIntent.putExtra("uid", mUID);
         startActivity(detailIntent);
     }
