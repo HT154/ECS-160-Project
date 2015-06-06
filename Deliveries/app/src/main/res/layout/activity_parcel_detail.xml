@@ -37,14 +37,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Source"
-            android:id="@+id/tv2" />
+            android:id="@+id/TextParcelSource" />
 
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelSource"
             android:hint="Source"
-            android:enabled="false" />
+            android:enabled="false"
+            android:numeric="integer"/>
     </LinearLayout>
 
     <LinearLayout
@@ -65,7 +66,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelDestination"
             android:hint="Destination"
-            android:enabled="false" />
+            android:enabled="false"
+            android:numeric="integer"/>
     </LinearLayout>
 
     <LinearLayout
@@ -86,7 +88,14 @@
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelCourier"
             android:hint="Courier"
-            android:enabled="false" />
+            android:enabled="false"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use Courier"
+            android:id="@+id/CheckboxParcelCourier"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <LinearLayout
@@ -100,7 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Carrier"
-            android:id="@+id/tv5" />
+            android:id="@+id/TextParcelCarrier" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -144,11 +153,11 @@
             android:text="Time"
             android:id="@+id/tv7" />
 
-        <EditText
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/EditParcelTime"
-            android:hint="Time"
+            android:id="@+id/ButtonParcelTime"
+            android:text="SET TIME"
             android:enabled="false" />
     </LinearLayout>
 
@@ -165,11 +174,11 @@
             android:text="Date"
             android:id="@+id/tv8" />
 
-        <EditText
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/EditParcelDate"
-            android:hint="Date"
+            android:id="@+id/ButtonParcelDate"
+            android:text="SET DATE"
             android:enabled="false" />
     </LinearLayout>
 
