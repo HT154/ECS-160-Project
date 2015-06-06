@@ -40,7 +40,6 @@ public class API {
     public static void user(Object sender, String method, int uid1, int uid2){
         API.get_instance()._user(sender, method, uid1, uid2);
     } //returns JSONArray with some items and stuff
-    //TODO: Write better return value here
     //Looks like this [{"id":"15","name":"jvb2","pass":"qwerty","courier":"1","lat":"0","lng":"0","rating":"0","uid1":"20","uid2":"24","status":"1"}]
 
     public static void parcels(Object sender, String method, int uid) {

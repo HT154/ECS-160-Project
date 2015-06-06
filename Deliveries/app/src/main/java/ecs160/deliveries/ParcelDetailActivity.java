@@ -70,8 +70,8 @@ public class ParcelDetailActivity extends ActionBarActivity {
 
         //Setup intents
         mUID = getIntent().getIntExtra("uid", -1);
-        pID = getIntent().getIntExtra("id", -1); //TODO: Right now this is returning -1
-        is_creating_parcel = false; //TODO: Get an intent that returns whether or not we are creating a new parcel or just editing/viewing an old one
+        pID = getIntent().getIntExtra("target", -1);
+        is_creating_parcel = pID < 0;
 
         //Initialize buttons
         finalize_button.setOnClickListener(
@@ -156,7 +156,7 @@ public class ParcelDetailActivity extends ActionBarActivity {
         String p_status = my_parcel.getString("status");
         switch (p_status) {
             //0 and 3 are the same
-            case "0": //TODO: Make sure that this works, I assume that Java doesn't stop until a break
+            case "0":
             case "3":
                 //TODO: Replace these with "fancy" widgets for getting time/date/location
                 //Set enabled is to enable/disable editing of them by the user
@@ -209,7 +209,7 @@ public class ParcelDetailActivity extends ActionBarActivity {
                 send_lat, send_lng, send_time, send_courier);
     }
 
-    //TODO: implement this fully
+    //Callback for the parcel creation, probably doesn't do anything
     public void createParcelCallback(){
         //created parcel yay
         //probably return to main menu at this point

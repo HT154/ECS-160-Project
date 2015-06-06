@@ -121,8 +121,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     startActivity(addFriendIntent);
                     return true;
                 case 1:
-                    Intent addParcelIntent = new Intent(this, AddParcelActivity.class);
+                    Intent addParcelIntent = new Intent(this, ParcelDetailActivity.class);
                     addParcelIntent.putExtra("uid", mUID);
+                    addParcelIntent.putExtra("target", -1);
                     startActivity(addParcelIntent);
                     return true;
             }
