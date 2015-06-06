@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelDescription"
-            android:text="Description"
+            android:hint="Description"
             android:enabled="false" />
 
     </LinearLayout>
@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelSource"
-            android:text="Source"
+            android:hint="Source"
             android:enabled="false" />
     </LinearLayout>
 
@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelDestination"
-            android:text="Destination"
+            android:hint="Destination"
             android:enabled="false" />
     </LinearLayout>
 
@@ -85,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelCourier"
-            android:text="Courier"
+            android:hint="Courier"
             android:enabled="false" />
     </LinearLayout>
 
@@ -106,7 +106,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelCarrier"
-            android:text="Carrier"
+            android:hint="Carrier"
             android:enabled="false" />
     </LinearLayout>
 
@@ -127,7 +127,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelLocation"
-            android:text="Lat/Lng"
+            android:hint="Lat/Lng"
             android:enabled="false" />
     </LinearLayout>
 
@@ -148,7 +148,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelTime"
-            android:text="Time"
+            android:hint="Time"
             android:enabled="false" />
     </LinearLayout>
 
@@ -169,7 +169,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelDate"
-            android:text="Date"
+            android:hint="Date"
             android:enabled="false" />
     </LinearLayout>
 
