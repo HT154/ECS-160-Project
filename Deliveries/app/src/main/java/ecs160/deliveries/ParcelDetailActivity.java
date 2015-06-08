@@ -368,14 +368,15 @@ public class ParcelDetailActivity extends ActionBarActivity {
     }
 
     //Callback for the parcel creation, makes sure that the parcel was created
-    public void createParcelCallback(JSONArray arr) {
+    public void createParcelCallback(Object obj) {
+        JSONArray arr = (JSONArray) obj;
         if(arr.length() > 0) {
             Toast.makeText(getApplicationContext(), "Could not find a valid courier for your package",
                     Toast.LENGTH_SHORT).show();
             create_parcel_button.setEnabled(true);
         }
         else {
-            //TODO: return to main activity
+            finish();
         }
     }
 
