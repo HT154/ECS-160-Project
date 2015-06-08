@@ -2,26 +2,28 @@
     xmlns:tools="http://schemas.android.com/tools" android:id="@+id/parcel_detail_container"
     android:layout_width="match_parent" android:layout_height="match_parent"
     tools:context="ecs160.deliveries.ParcelDetailActivity" tools:ignore="MergeRootFrame"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="20dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp" >
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" >
+        android:orientation="horizontal" >
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="20"
             android:layout_height="wrap_content"
-            android:text="Description"
+            android:text="Name"
             android:id="@+id/tv1" />
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="6"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelDescription"
-            android:hint="Description"
+            android:hint="Name"
             android:enabled="false" />
 
     </LinearLayout>
@@ -29,18 +31,17 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" >
+        android:orientation="horizontal" >
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="20"
             android:layout_height="wrap_content"
             android:text="Source"
             android:id="@+id/TextParcelSource" />
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="6"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelSource"
             android:hint="Source"
@@ -50,46 +51,55 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" >
+        android:orientation="horizontal" >
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="20"
             android:layout_height="wrap_content"
             android:text="Destination"
             android:id="@+id/tv3" />
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="6"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelDestination"
             android:hint="Destination"
             android:enabled="false"/>
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_weight="6"
+            android:layout_height="wrap_content"
+            android:text="Set Destination"
+            android:visibility="gone"
+            android:id="@+id/ButtonParcelSetDestination" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" >
+        android:orientation="horizontal" >
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="20"
             android:layout_height="wrap_content"
             android:text="Courier"
-            android:id="@+id/TextParcelCourier" />
+            android:id="@+id/TextParcelCourier"
+            android:visibility="gone" />
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="6"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelCourier"
             android:hint="Courier"
-            android:enabled="false"/>
+            android:enabled="false"
+            android:visibility="gone"/>
 
         <CheckBox
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="6"
             android:layout_height="wrap_content"
             android:text="Use Courier"
             android:id="@+id/CheckboxParcelCourier"
@@ -99,18 +109,17 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" >
+        android:orientation="horizontal" >
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="20"
             android:layout_height="wrap_content"
             android:text="Carrier"
             android:id="@+id/TextParcelCarrier" />
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="6"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelCarrier"
             android:hint="Carrier"
@@ -120,99 +129,127 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" >
+        android:orientation="horizontal" >
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="20"
             android:layout_height="wrap_content"
-            android:text="Lat/Lng"
+            android:text="Latitude"
             android:id="@+id/tv6" />
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="6"
             android:layout_height="wrap_content"
-            android:id="@+id/EditParcelLocation"
-            android:hint="Lat/Lng"
+            android:id="@+id/EditParcelLatitude"
+            android:inputType="numberDecimal"
+            android:hint="Latitude"
             android:enabled="false" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" >
+        android:orientation="horizontal" >
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="20"
+            android:layout_height="wrap_content"
+            android:text="Longitude"
+            android:id="@+id/tv9" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_weight="6"
+            android:layout_height="wrap_content"
+            android:id="@+id/EditParcelLongitude"
+            android:inputType="numberDecimal"
+            android:hint="Longitude"
+            android:enabled="false" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_weight="20"
             android:layout_height="wrap_content"
             android:text="Time"
             android:id="@+id/tv7" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="6"
             android:layout_height="wrap_content"
             android:id="@+id/ButtonParcelTime"
-            android:text="SET TIME"
+            android:text="Set Time"
             android:enabled="false" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" >
+        android:orientation="horizontal" >
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="20"
             android:layout_height="wrap_content"
             android:text="Date"
             android:id="@+id/tv8" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="6"
             android:layout_height="wrap_content"
             android:id="@+id/ButtonParcelDate"
-            android:text="SET DATE"
+            android:text="Set Date"
             android:enabled="false" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_weight="10"
+            android:layout_height="wrap_content"
+            android:text="Accept Request"
+            android:id="@+id/ButtonParcelAcceptRequest"
+            android:visibility="gone" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_weight="10"
+            android:layout_height="wrap_content"
+            android:text="Decline Request"
+            android:id="@+id/ButtonParcelDeclineRequest"
+            android:visibility="gone" />
+    </LinearLayout>
+
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Create"
         android:id="@+id/ButtonParcelCreateParcel"
         android:visibility="gone" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Finalize"
         android:id="@+id/ButtonParcelFinalize"
         android:visibility="gone" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Send Request"
         android:id="@+id/ButtonParcelSendRequest"
         android:visibility="gone" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Accept Request"
-        android:id="@+id/ButtonParcelAcceptRequest"
-        android:visibility="gone" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Decline Request"
-        android:id="@+id/ButtonParcelDeclineRequest"
-        android:visibility="gone" />
 
 </LinearLayout>

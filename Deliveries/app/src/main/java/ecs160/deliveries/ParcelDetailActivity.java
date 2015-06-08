@@ -50,8 +50,10 @@ public class ParcelDetailActivity extends ActionBarActivity {
     CheckBox courier_checkbox;
     TextView carrier_text;
     EditText carrier_edit;
-    EditText location_edit;
+    EditText lat_edit;
+    EditText lng_edit;
 
+    Button destination_button;
     Button time_button;
     Button date_button;
     Button finalize_button;
@@ -65,7 +67,12 @@ public class ParcelDetailActivity extends ActionBarActivity {
     boolean is_creating_parcel;
     JSONArray confirmed_friends;
 
-    int year, month, day, minute, hour;
+    int year, month, day, minute, hour, destID;
+
+    public void setDest(JSONObject dest) throws JSONException {
+        destID = Integer.parseInt(dest.getString("id"));
+        destination_button.setText(dest.getString("name"));
+    }
 
     @Override
     public void onStart() {
@@ -81,7 +88,8 @@ public class ParcelDetailActivity extends ActionBarActivity {
         courier_checkbox = (CheckBox) findViewById(R.id.CheckboxParcelCourier);
         carrier_text = (TextView) findViewById(R.id.TextParcelCarrier);
         carrier_edit = (EditText) findViewById(R.id.EditParcelCarrier);
-        location_edit = (EditText) findViewById(R.id.EditParcelLocation);
+        lat_edit = (EditText) findViewById(R.id.EditParcelLatitude);
+        lng_edit = (EditText) findViewById(R.id.EditParcelLongitude);
 
         time_button = (Button) findViewById(R.id.ButtonParcelTime);
         date_button = (Button) findViewById(R.id.ButtonParcelDate);
@@ -90,6 +98,7 @@ public class ParcelDetailActivity extends ActionBarActivity {
         accept_request_button = (Button) findViewById(R.id.ButtonParcelAcceptRequest);
         decline_request_button = (Button) findViewById(R.id.ButtonParcelDeclineRequest);
         create_parcel_button = (Button) findViewById(R.id.ButtonParcelCreateParcel);
+        destination_button = (Button) findViewById(R.id.ButtonParcelSetDestination);
 
         //Setup intents
         mUID = getIntent().getIntExtra("uid", -1);
@@ -160,6 +169,13 @@ public class ParcelDetailActivity extends ActionBarActivity {
                 }
         );
 
+        destination_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                destClicked();
+            }
+        });
+
         API.friends(this, "friendsCallback", mUID);
         if (is_creating_parcel) {
             create_parcel_button.setVisibility(View.VISIBLE);
@@ -167,12 +183,14 @@ public class ParcelDetailActivity extends ActionBarActivity {
             description_edit.setEnabled(true);
             source_text.setVisibility(View.GONE);
             source_edit.setVisibility(View.GONE);
-            destination_edit.setEnabled(true);
-            courier_edit.setVisibility(View.GONE);
+            destination_edit.setVisibility(View.GONE);
+            destination_button.setVisibility(View.VISIBLE);
+            courier_text.setVisibility(View.VISIBLE);
             courier_checkbox.setVisibility(View.VISIBLE);
             carrier_text.setVisibility(View.GONE);
             carrier_edit.setVisibility(View.GONE);
-            location_edit.setEnabled(true);
+            lat_edit.setEnabled(true);
+            lng_edit.setEnabled(true);
             time_button.setEnabled(true);
             date_button.setEnabled(true);
         } else {
@@ -222,41 +240,51 @@ public class ParcelDetailActivity extends ActionBarActivity {
         }
 
         boolean is_courier = my_parcel.getInt("courier") > 0;
-        if(!is_courier) {
-            courier_text.setVisibility(View.GONE);
-            courier_edit.setVisibility(View.GONE);
+        if(is_courier) {
+            courier_text.setVisibility(View.VISIBLE);
+            courier_edit.setVisibility(View.VISIBLE);
         }
 
         //Grab parcel and set the values for all the text edit
         description_edit.setText(my_parcel.getString("description"));
-        source_edit.setText(getName(my_parcel.getInt("source")));
-        destination_edit.setText(getName(my_parcel.getInt("destination")));
+        source_edit.setText(my_parcel.getString("srcName"));
+        destination_edit.setText(my_parcel.getString("destName"));
         if(is_courier)
-            courier_edit.setText(getName(my_parcel.getInt("courier")));
-        carrier_edit.setText(getName(my_parcel.getInt("carrier")));
-        location_edit.setText(my_parcel.getString("lat")); //TODO: update for map
+            courier_edit.setText(my_parcel.getString("courName"));
+
+        if (my_parcel.getInt("carrier") == my_parcel.getInt("source")) {
+            carrier_edit.setText(my_parcel.getString("srcName"));
+        } else if (my_parcel.getInt("carrier") == my_parcel.getInt("courier")) {
+            carrier_edit.setText(my_parcel.getString("courName"));
+        } else if (my_parcel.getInt("carrier") == my_parcel.getInt("destination")) {
+            carrier_edit.setText(my_parcel.getString("destName"));
+        }
+
+        lat_edit.setText(my_parcel.getString("lat"));
+        lng_edit.setText(my_parcel.getString("lng"));
 
         FromTime(my_parcel.getInt("time"));
         time_button.setText(String.valueOf(hour) + ":" + String.valueOf(minute));
         date_button.setText(String.valueOf(month) + "/" + String.valueOf(day) + "/" + String.valueOf(year));
 
         //Setup UI based on status
-        String p_status = my_parcel.getString("status");
+        int p_status = Integer.parseInt(my_parcel.getString("status"));
         switch (p_status) {
             //0 and 3 are the same
-            case "0":
-            case "3":
+            case 0:
+            case 3:
                 //Set enabled is to enable/disable editing of them by the user
                 time_button.setEnabled(true);
                 date_button.setEnabled(true);
-                location_edit.setEnabled(true); //TODO: Replace these with "fancy" widgets for getting location
+                lat_edit.setEnabled(true);
+                lng_edit.setEnabled(true);
                 send_request_button.setVisibility(View.VISIBLE);
                 break;
-            case "1":
+            case 1:
                 accept_request_button.setVisibility(View.VISIBLE);
                 decline_request_button.setVisibility(View.VISIBLE);
                 break;
-            case "2":
+            case 2:
                 finalize_button.setVisibility(View.VISIBLE);
                 break;
         }
@@ -306,21 +334,28 @@ public class ParcelDetailActivity extends ActionBarActivity {
         }
     };
 
+    public void destClicked() {
+        Intent chooseFriendIntent = new Intent(this, ChooseFriendActivity.class);
+        chooseFriendIntent.putExtra("uid", mUID);
+        startActivity(chooseFriendIntent);
+    }
+
     //Called when the user wants to finalize a request
     public void requestFinalize() {
         if (Validate()) {
             API.finalize(pID, mUID);
-            finalize_button.setEnabled(false); //TODO: Visibility.GONE or just disabled when the buttons are clicked?
+            finalize_button.setEnabled(false);
         }
     }
 
     //Called when the user wants to send a new request to another user
     public void requestSend() {
         if (Validate()) {
-            API.rendezvousRequest(pID, 0, 0, ToTime()); //TODO: Put in the lat/lng once the map is implemented
+            API.rendezvousRequest(pID, Double.parseDouble(lat_edit.getText().toString()), Double.parseDouble(lng_edit.getText().toString()), ToTime());
             time_button.setEnabled(false);
             date_button.setEnabled(false);
-            location_edit.setEnabled(false);
+            lat_edit.setEnabled(false);
+            lng_edit.setEnabled(false);
             send_request_button.setEnabled(false);
         }
     }
