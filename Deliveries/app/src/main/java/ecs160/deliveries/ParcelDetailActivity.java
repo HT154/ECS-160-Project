@@ -20,7 +20,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+import java.io.Console;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -35,7 +37,7 @@ public class ParcelDetailActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 
-    /*Added by Andrew
+    /*
     Parcel right now covers everything except lat/lng
     Gives UI for editing and viewing parcel information on a specific item basis
     */
@@ -43,6 +45,7 @@ public class ParcelDetailActivity extends ActionBarActivity {
     TextView source_text;
     EditText source_edit;
     EditText destination_edit;
+    TextView courier_text;
     EditText courier_edit;
     CheckBox courier_checkbox;
     TextView carrier_text;
@@ -60,6 +63,7 @@ public class ParcelDetailActivity extends ActionBarActivity {
     int pID; //parcel ID
     int mUID; //my user ID
     boolean is_creating_parcel;
+    JSONArray confirmed_friends;
 
     int year, month, day, minute, hour;
 
@@ -72,6 +76,7 @@ public class ParcelDetailActivity extends ActionBarActivity {
         source_text = (TextView) findViewById(R.id.TextParcelSource);
         source_edit = (EditText) findViewById(R.id.EditParcelSource);
         destination_edit = (EditText) findViewById(R.id.EditParcelDestination);
+        courier_text = (TextView) findViewById(R.id.TextParcelCourier);
         courier_edit = (EditText) findViewById(R.id.EditParcelCourier);
         courier_checkbox = (CheckBox) findViewById(R.id.CheckboxParcelCourier);
         carrier_text = (TextView) findViewById(R.id.TextParcelCarrier);
@@ -155,8 +160,8 @@ public class ParcelDetailActivity extends ActionBarActivity {
                 }
         );
 
+        API.friends(this, "friendsCallback", mUID);
         if (is_creating_parcel) {
-
             create_parcel_button.setVisibility(View.VISIBLE);
 
             description_edit.setEnabled(true);
@@ -178,14 +183,57 @@ public class ParcelDetailActivity extends ActionBarActivity {
 
     //Callback for the API, returns JSON for parcel
     //Example JSON: [{"id":"1","description":"test1","status":"0","source":"20","destination":"24","courier":"0","carrier":"20","lat":"0","lng":"0","time":"0"}]
+    JSONObject my_parcel;
     public void parcelCallback(Object ret) throws JSONException {
+        my_parcel = ((JSONArray) ret).getJSONObject(0);
+        callbackMain();
+    }
+
+    JSONArray all_friends;
+    public void friendsCallback(Object ret) throws JSONException{
+        all_friends = (JSONArray) ret;
+        confirmed_friends = (JSONArray) all_friends.get(1);
+        callbackMain();
+    }
+
+    public String getName(int uid)  {
+        if(uid == mUID) return "Me";
+        try {
+            for (int i = 0; i < 3; i++) {
+                JSONArray check_array = (JSONArray) all_friends.get(i);
+                for(int j=0; j<check_array.length(); j++) {
+                    JSONObject person = check_array.getJSONObject(j);
+                    if(person.getInt("uid2") == uid)
+                        return person.getString("name");
+                }
+            }
+        } catch (Exception e){}
+
+        Toast.makeText(getApplicationContext(), "Couldn't find a friend matching ID " + uid, Toast.LENGTH_SHORT).show();
+        return "";
+    }
+
+    boolean is_called = false;
+    public void callbackMain() throws JSONException{
+        //Must get both the parcel and friends callback before running
+        if(!is_called) {
+            is_called = true;
+            return;
+        }
+
+        boolean is_courier = my_parcel.getInt("courier") > 0;
+        if(!is_courier) {
+            courier_text.setVisibility(View.GONE);
+            courier_edit.setVisibility(View.GONE);
+        }
+
         //Grab parcel and set the values for all the text edit
-        JSONObject my_parcel = ((JSONArray) ret).getJSONObject(0);
         description_edit.setText(my_parcel.getString("description"));
-        source_edit.setText(my_parcel.getString("source"));
-        destination_edit.setText(my_parcel.getString("destination"));
-        courier_edit.setText(my_parcel.getString("courier"));
-        carrier_edit.setText(my_parcel.getString("carrier"));
+        source_edit.setText(getName(my_parcel.getInt("source")));
+        destination_edit.setText(getName(my_parcel.getInt("destination")));
+        if(is_courier)
+            courier_edit.setText(getName(my_parcel.getInt("courier")));
+        carrier_edit.setText(getName(my_parcel.getInt("carrier")));
         location_edit.setText(my_parcel.getString("lat")); //TODO: update for map
 
         FromTime(my_parcel.getInt("time"));
@@ -198,11 +246,10 @@ public class ParcelDetailActivity extends ActionBarActivity {
             //0 and 3 are the same
             case "0":
             case "3":
-                //TODO: Replace these with "fancy" widgets for getting time/date/location
                 //Set enabled is to enable/disable editing of them by the user
                 time_button.setEnabled(true);
                 date_button.setEnabled(true);
-                location_edit.setEnabled(true);
+                location_edit.setEnabled(true); //TODO: Replace these with "fancy" widgets for getting location
                 send_request_button.setVisibility(View.VISIBLE);
                 break;
             case "1":
@@ -289,20 +336,47 @@ public class ParcelDetailActivity extends ActionBarActivity {
     //Creates the parcel and creates a request at the same time
     public void createParcel() {
         if (Validate()) {
-            int send_destination = Integer.parseInt(destination_edit.toString());
-            double send_lat = 0;
-            double send_lng = 0;
-            API.addParcel(this, "createParcelCallback", mUID, send_destination, description_edit.toString(),
-                    send_lat, send_lng, ToTime(), courier_checkbox.isChecked()); //TODO: update lat/lng for map input
+            int friend_uid = -1;
+            for(int i=0; i<confirmed_friends.length(); i++)
+            {
+                try {
+                    System.out.println("Friend: " + confirmed_friends.getJSONObject(i).getString("name"));
+                    System.out.println("Searching: " + destination_edit.getText().toString());
+                    if (confirmed_friends.getJSONObject(i).getString("name").equals(destination_edit.getText().toString())) {
+                        System.out.println("You found it: " + confirmed_friends.getJSONObject(i).getInt("uid2"));
+                        friend_uid = confirmed_friends.getJSONObject(i).getInt("uid2");
+                        break;
+                    }
+                } catch(Exception e){}
+            }
+
+            if(friend_uid < 0) //error
+                Toast.makeText(getApplicationContext(), destination_edit.getText().toString() + " is not one of your confirmed friends",
+                        Toast.LENGTH_SHORT).show();
+            else {
+                create_parcel_button.setEnabled(false);
+                double send_lat = 0; //TODO: update lat/lng for map input
+                double send_lng = 0;
+                API.addParcel(this, "createParcelCallback", mUID, friend_uid, description_edit.getText().toString(),
+                        send_lat, send_lng, ToTime(), courier_checkbox.isChecked());
+            }
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "Invalid time of Year:" + year + " Month:" + month + " Day:" + day + " Hour:" + hour + " Minute:" + minute,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
     //Callback for the parcel creation, makes sure that the parcel was created
-    //Toss a toast if there's an error (no courier for example)
-    public void createParcelCallback() {
-        //created parcel yay
-        //probably return to main menu at this point
-        //could return the pid and create the response right now, otherwise it could start off in state 0 and not require date/time immediately
+    public void createParcelCallback(JSONArray arr) {
+        if(arr.length() > 0) {
+            Toast.makeText(getApplicationContext(), "Could not find a valid courier for your package",
+                    Toast.LENGTH_SHORT).show();
+            create_parcel_button.setEnabled(true);
+        }
+        else {
+            //TODO: return to main activity
+        }
     }
 
     public boolean Validate() //TODO: include any other values that may need validation (destination ID for example)

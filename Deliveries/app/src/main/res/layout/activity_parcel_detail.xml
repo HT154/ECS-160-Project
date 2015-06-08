@@ -44,8 +44,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelSource"
             android:hint="Source"
-            android:enabled="false"
-            android:numeric="integer"/>
+            android:enabled="false"/>
     </LinearLayout>
 
     <LinearLayout
@@ -66,8 +65,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelDestination"
             android:hint="Destination"
-            android:enabled="false"
-            android:numeric="integer"/>
+            android:enabled="false"/>
     </LinearLayout>
 
     <LinearLayout
@@ -81,7 +79,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Courier"
-            android:id="@+id/tv4" />
+            android:id="@+id/TextParcelCourier" />
 
         <EditText
             android:layout_width="wrap_content"
