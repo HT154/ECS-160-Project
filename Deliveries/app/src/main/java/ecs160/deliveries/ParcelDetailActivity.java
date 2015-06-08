@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import java.io.Console;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class ParcelDetailActivity extends ActionBarActivity {
@@ -68,11 +70,6 @@ public class ParcelDetailActivity extends ActionBarActivity {
     JSONArray confirmed_friends;
 
     int year, month, day, minute, hour, destID;
-
-    public void setDest(JSONObject dest) throws JSONException {
-        destID = Integer.parseInt(dest.getString("id"));
-        destination_button.setText(dest.getString("name"));
-    }
 
     @Override
     public void onStart() {
@@ -263,9 +260,9 @@ public class ParcelDetailActivity extends ActionBarActivity {
         lat_edit.setText(my_parcel.getString("lat"));
         lng_edit.setText(my_parcel.getString("lng"));
 
-        FromTime(my_parcel.getInt("time"));
-        time_button.setText(String.valueOf(hour) + ":" + String.valueOf(minute));
-        date_button.setText(String.valueOf(month) + "/" + String.valueOf(day) + "/" + String.valueOf(year));
+        FromTime(my_parcel.getLong("time"));
+        time_button.setText(String.valueOf(hour) + ":" + String.format("%02d", minute));
+        date_button.setText(String.valueOf(month + 1) + "/" + String.valueOf(day) + "/" + String.valueOf(year));
 
         //Setup UI based on status
         int p_status = Integer.parseInt(my_parcel.getString("status"));
@@ -308,7 +305,7 @@ public class ParcelDetailActivity extends ActionBarActivity {
         public void onTimeSet(TimePicker view, int set_hour, int set_minute) {
             hour = set_hour;
             minute = set_minute;
-            time_button.setText(String.valueOf(hour) + ":" + String.valueOf(minute));
+            time_button.setText(String.valueOf(hour) + ":" + String.format("%02d", minute));
         }
     };
 
@@ -330,22 +327,31 @@ public class ParcelDetailActivity extends ActionBarActivity {
             month = set_month;
             day = set_day;
             year = set_year;
-            date_button.setText(String.valueOf(month) + "/" + String.valueOf(day) + "/" + String.valueOf(year));
+            date_button.setText(String.valueOf(month + 1) + "/" + String.valueOf(day) + "/" + String.valueOf(year));
         }
     };
 
     public void destClicked() {
         Intent chooseFriendIntent = new Intent(this, ChooseFriendActivity.class);
         chooseFriendIntent.putExtra("uid", mUID);
-        startActivity(chooseFriendIntent);
+        startActivityForResult(chooseFriendIntent, 154);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 154 && resultCode == 154) {
+            try {
+                JSONObject dest = new JSONObject(data.getStringExtra("chosenFriend"));
+                destID = Integer.parseInt(dest.getString("id"));
+                destination_button.setText(dest.getString("name"));
+            } catch (Exception e) {}
+        }
     }
 
     //Called when the user wants to finalize a request
     public void requestFinalize() {
-        if (Validate()) {
-            API.finalize(pID, mUID);
-            finalize_button.setEnabled(false);
-        }
+        API.finalize(pID, mUID);
+        finalize_button.setEnabled(false);
     }
 
     //Called when the user wants to send a new request to another user
@@ -371,32 +377,12 @@ public class ParcelDetailActivity extends ActionBarActivity {
     //Creates the parcel and creates a request at the same time
     public void createParcel() {
         if (Validate()) {
-            int friend_uid = -1;
-            for(int i=0; i<confirmed_friends.length(); i++)
-            {
-                try {
-                    System.out.println("Friend: " + confirmed_friends.getJSONObject(i).getString("name"));
-                    System.out.println("Searching: " + destination_edit.getText().toString());
-                    if (confirmed_friends.getJSONObject(i).getString("name").equals(destination_edit.getText().toString())) {
-                        System.out.println("You found it: " + confirmed_friends.getJSONObject(i).getInt("uid2"));
-                        friend_uid = confirmed_friends.getJSONObject(i).getInt("uid2");
-                        break;
-                    }
-                } catch(Exception e){}
-            }
-
-            if(friend_uid < 0) //error
-                Toast.makeText(getApplicationContext(), destination_edit.getText().toString() + " is not one of your confirmed friends",
-                        Toast.LENGTH_SHORT).show();
-            else {
-                create_parcel_button.setEnabled(false);
-                double send_lat = 0; //TODO: update lat/lng for map input
-                double send_lng = 0;
-                API.addParcel(this, "createParcelCallback", mUID, friend_uid, description_edit.getText().toString(),
+            create_parcel_button.setEnabled(false);
+            double send_lat = Double.parseDouble(lat_edit.getText().toString());
+            double send_lng = Double.parseDouble(lng_edit.getText().toString());
+            API.addParcel(this, "createParcelCallback", mUID, destID, description_edit.getText().toString(),
                         send_lat, send_lng, ToTime(), courier_checkbox.isChecked());
-            }
-        }
-        else {
+        } else {
             Toast.makeText(getApplicationContext(), "Invalid time of Year:" + year + " Month:" + month + " Day:" + day + " Hour:" + hour + " Minute:" + minute,
                     Toast.LENGTH_SHORT).show();
         }
@@ -417,24 +403,27 @@ public class ParcelDetailActivity extends ActionBarActivity {
 
     public boolean Validate() //TODO: include any other values that may need validation (destination ID for example)
     {
+        System.out.println(year);
+        System.out.println(month);
+        System.out.println(day);
+        System.out.println(hour);
+        System.out.println(minute);
+
         return (year > 0 && month > 0 && day > 0 && hour > 0 && minute > 0);
     }
 
-    public int ToTime() {
-        //Stores time integer as YYYY/MM/DD/HH/MM
-        int year_int = year * 100000000;
-        int month_int = month * 1000000;
-        int day_int = day * 10000;
-        int hour_int = hour * 100;
-        return year_int + month_int + day_int + hour_int + minute;
+    public long ToTime() {
+        GregorianCalendar d = new GregorianCalendar(year, month, day, hour, 0);
+        return d.getTimeInMillis() / 1000;
     }
 
-    public void FromTime(int time_val) {
-        //Turns time_val from format YYYY/MM/DD/HH/MM to 5 separate integers
-        minute = time_val % 100;
-        hour = (time_val / 100) % 100;
-        day = (time_val / 10000) % 100;
-        month = (time_val / 1000000) % 100;
-        year = (time_val / 100000000);
+    public void FromTime(long time_val) {
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(time_val * 1000);
+        minute = cal.get(Calendar.MINUTE);
+        hour = cal.get(Calendar.HOUR);
+        day = cal.get(Calendar.DAY_OF_MONTH);
+        month = cal.get(Calendar.MONTH);
+        year = cal.get(Calendar.YEAR);
     }
 }

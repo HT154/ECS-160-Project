@@ -142,7 +142,7 @@
             android:layout_weight="6"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelLatitude"
-            android:inputType="numberDecimal"
+            android:inputType="numberDecimal|numberSigned"
             android:hint="Latitude"
             android:enabled="false" />
     </LinearLayout>
@@ -163,7 +163,7 @@
             android:layout_weight="6"
             android:layout_height="wrap_content"
             android:id="@+id/EditParcelLongitude"
-            android:inputType="numberDecimal"
+            android:inputType="numberDecimal|numberSigned"
             android:hint="Longitude"
             android:enabled="false" />
     </LinearLayout>

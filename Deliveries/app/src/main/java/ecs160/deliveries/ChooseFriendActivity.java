@@ -1,6 +1,7 @@
 package ecs160.deliveries;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -67,11 +68,12 @@ public class ChooseFriendActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        ParcelDetailActivity parent = (ParcelDetailActivity) getParent();
         try {
-            parent.setDest(friends.getJSONObject(position));
-
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("chosenFriend", friends.getJSONObject(position).toString());
+            setResult(154, resultIntent);
         } catch (JSONException e) {}
+
         finish();
     }
 
@@ -79,18 +81,15 @@ public class ChooseFriendActivity extends ListActivity {
     protected void onStart() {
         super.onStart();
 
-        if (getIntent() != null) {
-            mUID = getIntent().getIntExtra("uid", 20);
-            API.friends(this, "friendsCallback", mUID);
-        } else {
-            System.out.print("wtf");
-        }
+        mUID = getIntent().getIntExtra("uid", 20);
+        API.friends(this, "friendsCallback", mUID);
 
     }
 
     public void friendsCallback(Object res) throws JSONException {
         JSONArray response = (JSONArray) res;
-        friends = response.getJSONArray(0);
+        friends = response.getJSONArray(1);
+        System.out.println(friends);
         adapter.notifyDataSetChanged();
     }
 

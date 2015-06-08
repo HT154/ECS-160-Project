@@ -50,7 +50,7 @@ public class API {
         API.get_instance()._parcel(sender, method, pid);
     }
     public static void addParcel(Object sender, String method, int uid, int destination, String description, double lat,
-                                 double lng, int time, boolean courier) {
+                                 double lng, long time, boolean courier) {
         API.get_instance()._addParcel(sender, method, uid, destination, description, lat, lng, time, courier);
     } //returns empty array on success, 1-item array with string error message on failure
 
@@ -61,7 +61,7 @@ public class API {
         API.get_instance()._rate(uid1, uid2, up);
     }
 
-    public static void rendezvousRequest(int pid, double lat, double lng, int time) {
+    public static void rendezvousRequest(int pid, double lat, double lng, long time) {
         API.get_instance()._rendezvousRequest(pid, lat, lng, time);
     }
     public static void rendezvousResponse(int pid, boolean accept) {
@@ -134,14 +134,14 @@ public class API {
     }
 
     private void _addParcel(Object sender, String method, int uid, int destination, String description, double lat,
-                            double lng, int time, boolean courier) {
+                            double lng, long time, boolean courier) {
         Dictionary<String,String > args = new Hashtable<String, String>();
         args.put("uid", Integer.toString(uid));
         args.put("destination", Integer.toString(destination));
         args.put("description", description);
         args.put("lat", Double.toString(lat));
         args.put("lng", Double.toString(lng));
-        args.put("time", Integer.toString(time));
+        args.put("time", Long.toString(time));
         args.put("courier", Boolean.toString(courier));
 
         APITask task = new APITask(sender, method, "addparcel", args);
@@ -212,12 +212,12 @@ public class API {
         task.execute();
     }
 
-    private void _rendezvousRequest(int pid, double lat, double lng, int time) {
+    private void _rendezvousRequest(int pid, double lat, double lng, long time) {
         Dictionary<String,String > args = new Hashtable<String, String>();
         args.put("pid", Integer.toString(pid));
         args.put("lat", Double.toString(lat));
         args.put("lng", Double.toString(lng));
-        args.put("time", Integer.toString(time));
+        args.put("time", Long.toString(time));
 
         APITask task = new APITask("rendezvousrequest", args);
         task.execute();
