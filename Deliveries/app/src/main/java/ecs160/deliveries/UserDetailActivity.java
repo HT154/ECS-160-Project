@@ -24,6 +24,7 @@ public class UserDetailActivity extends ActionBarActivity {
     Button accept_request;
     TextView feedback_score;
     TextView text_name;
+    TextView text_status;
     int feedback_int_value;
 
     int mUID;
@@ -54,6 +55,7 @@ public class UserDetailActivity extends ActionBarActivity {
         accept_request = (Button) findViewById(R.id.ButtonAcceptFriendRequest);
         feedback_score = (TextView) findViewById(R.id.TextFeedbackScore);
         text_name = (TextView) findViewById(R.id.TextUserName);
+        text_status = (TextView) findViewById(R.id.TextFriendStatus);
 
         negative_feedback.setVisibility(View.GONE);
         positive_feedback.setVisibility(View.GONE);
@@ -121,9 +123,13 @@ public class UserDetailActivity extends ActionBarActivity {
             System.out.println("!!!");
             System.out.println(friendStatus);
             if (friendStatus == 2) {
-
+                text_status.setText("Friend Request Received");
                 decline_request.setVisibility(View.VISIBLE);
                 accept_request.setVisibility(View.VISIBLE);
+            } else if (friendStatus == 1) {
+                text_status.setText("Friend Request Sent");
+            } else {
+                text_status.setText("Confirmed Friend");
             }
         }
     }

@@ -65,14 +65,16 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Accept Request"
-            android:id="@+id/ButtonAcceptFriendRequest" />
+            android:id="@+id/ButtonAcceptFriendRequest"
+            android:visibility="gone" />
 
         <Button
             android:layout_width="fill_parent"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Decline Request"
-            android:id="@+id/ButtonDeclineFriendRequest" />
+            android:id="@+id/ButtonDeclineFriendRequest"
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>
